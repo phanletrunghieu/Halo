@@ -3,7 +3,6 @@ package halo;
 import halo.models.User;
 import halo.ui.ChatForm;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -105,7 +104,6 @@ public class Listener extends Thread {
                 
                 if(line!=null){
                     String[] data = line.split(":");
-                    System.out.println(data[0]+"zzz"+data[1]);
                     
                     int vt=-1;
                     for (int i = 0; i < usersChatting.size(); i++) {
