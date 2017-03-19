@@ -6,10 +6,10 @@
 package halo.ui;
 
 import halo.Halo;
-import static halo.Halo.MD5Encode;
-import static halo.Halo.user;
 import halo.Listener;
 import halo.models.User;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -143,4 +143,24 @@ public class LoginForm extends javax.swing.JFrame {
     private javax.swing.JTextField txtPassword;
     private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
+    
+    public static String MD5Encode(String s){
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(s.getBytes());
+            
+            byte byteData[] = md.digest();
+            
+            //convert the byte to hex format method 1
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < byteData.length; i++) {
+                sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            
+            return sb.toString();
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(Halo.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 }
