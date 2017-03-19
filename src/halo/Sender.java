@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 /**
- * send message to other user
+ * send message to other users
  * @author Phan Hieu
  */
 public class Sender extends Thread{
