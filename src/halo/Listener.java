@@ -19,7 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * accept connect request from others
+ * accept connect request from other user
  * @author Phan Hieu
  */
 public class Listener extends Thread {
