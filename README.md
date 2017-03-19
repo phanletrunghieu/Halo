@@ -1,10 +1,13 @@
 # Halo
 LoginForm
+
 	if (đăng nhập thành công)
 	{
 		//
 	}
+	
 FriendList:
+
 	private User user
 	public FriendList(User user) {
 		this.user=user;
@@ -18,6 +21,7 @@ FriendList:
 				new ChatForm(<User muốn chat>).setVisible(true);
 			}
 ChatForm: (properties defaultCloseOperation: DISPOSE)
+
 	private User user//người muốn chat
 	public ChatForm(User user) {
 		this.user=user;
