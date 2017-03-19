@@ -15,6 +15,7 @@ FriendList:
 	}
 	- chức năng:
 		- hiện các thông tin của acccount
+		- có khung search để tìm người kết bạn
 		- dùng JList hiển thị danh sách bạn bè (dùng hàm getFriends() trong class User)
 			EVENT double click item trong JList
 			{
