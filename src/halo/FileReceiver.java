@@ -70,7 +70,7 @@ public class FileReceiver extends Thread {
                     socket.close();
                 }
             } catch (IOException ex) {
-                Logger.getLogger(FileReceiver.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("Close connection");
             }
             
         }
