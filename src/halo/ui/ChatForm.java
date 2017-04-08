@@ -6,7 +6,7 @@
 package halo.ui;
 
 import halo.Listener;
-import halo.Sender;
+import halo.TextSender;
 import halo.models.User;
 
 /**
@@ -101,7 +101,7 @@ public class ChatForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        new Sender(user.getAddrListening(), user.getPortListening(), txtMessage.getText()).start();
+        new TextSender(user.getAddrListening(), user.getPortListening(), txtMessage.getText()).start();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
