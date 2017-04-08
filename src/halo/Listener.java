@@ -125,10 +125,8 @@ public class Listener extends Thread {
                 }
                 //String ip=(((InetSocketAddress) clientSocket.getRemoteSocketAddress()).getAddress()).toString().replace("/","");
             }
-        } catch (IOException ex) {
-            Logger.getLogger(Listener.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
+        } catch (IOException | SQLException ex) {
             Logger.getLogger(Listener.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }   
+    }
 }
