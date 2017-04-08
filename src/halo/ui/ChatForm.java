@@ -5,9 +5,14 @@
  */
 package halo.ui;
 
+import halo.FileSender;
 import halo.Listener;
 import halo.TextSender;
 import halo.models.User;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 
 /**
  *
@@ -51,6 +56,7 @@ public class ChatForm extends javax.swing.JFrame {
         txtChat = new javax.swing.JTextArea();
         txtMessage = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
+        btnSendFile = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -71,6 +77,13 @@ public class ChatForm extends javax.swing.JFrame {
             }
         });
 
+        btnSendFile.setLabel("File");
+        btnSendFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSendFileActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -82,6 +95,8 @@ public class ChatForm extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(txtMessage)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnSendFile)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1)))
                 .addContainerGap())
         );
@@ -93,7 +108,8 @@ public class ChatForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(btnSendFile))
                 .addContainerGap())
         );
 
@@ -107,6 +123,18 @@ public class ChatForm extends javax.swing.JFrame {
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         Listener.removeUserChatting(this);
     }//GEN-LAST:event_formWindowClosed
+
+    private void btnSendFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendFileActionPerformed
+        JFileChooser jfc = new JFileChooser();
+        int dialog_value = jfc.showOpenDialog(null);
+        if (dialog_value == JFileChooser.APPROVE_OPTION) {
+            try {
+                new FileSender(user.getAddrListening(), user.getPortListening(), jfc.getSelectedFile()).run();
+            } catch (IOException ex) {
+                Logger.getLogger(ChatForm.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_btnSendFileActionPerformed
 
     /**
      * @param args the command line arguments
@@ -144,6 +172,7 @@ public class ChatForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnSendFile;
     private javax.swing.JButton jButton1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea txtChat;

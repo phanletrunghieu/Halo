@@ -36,12 +36,18 @@ public class FileReceiver extends Thread {
         while (true) {
             try {
                 if (din.readByte()== Packet.INITITALIZE){
+                    int b = 0;
+                    String fromUsername = "";
+                    while ((b = din.read()) != Packet.SEPARATOR) {
+                        fromUsername += (char) b;
+                    }
+                    
                     byte[] cmd_buff = new byte[3];
                     din.read(cmd_buff, 0, cmd_buff.length);
                     byte[] recv_data = Packet.ReadStream(din);
                     switch (new String(cmd_buff)) {
                         case Packet.COMMAND_SEND_FILE_NAME:
-                            rw = new RandomAccessFile("/home/rahul/Downloads/" + new String(recv_data), "rw");
+                            rw = new RandomAccessFile(new String(recv_data), "rw");
                             dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_REQUEST_SEND_FILE_DATA, String.valueOf(current_file_pointer).getBytes("UTF8")));
                             dout.flush();
                             break;
