@@ -105,11 +105,9 @@ public class Listener extends Thread {
         Socket clientSocket;
         try {
             while ((clientSocket = serverSocket.accept()) != null) {
-                InputStream is = clientSocket.getInputStream();
                 DataInputStream din = new DataInputStream(clientSocket.getInputStream());
-                byte[] initilize = new byte[1];
-                din.read(initilize, 0, initilize.length);
-                if (initilize[0] == 2) {
+                
+                if (din.read() == Packet.INITITALIZE) {
                     int b = 0;
                     String fromUsername = "";
                     while ((b = din.read()) != Packet.SEPARATOR) {
@@ -119,7 +117,7 @@ public class Listener extends Thread {
                     byte[] cmd_buff = new byte[3];
                     din.read(cmd_buff, 0, cmd_buff.length);
                     switch (new String(cmd_buff)) {
-                        case Packet.COMMAND_SENDTEXT:
+                        case Packet.COMMAND_SEND_TEXT:
                             try {
                                 String message = new String(Packet.ReadStream(din));
                                 ShowChatForm(fromUsername, message);
@@ -132,6 +130,7 @@ public class Listener extends Thread {
 
                 
                 /*
+                InputStream is = clientSocket.getInputStream();
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
                 String line = br.readLine();
 

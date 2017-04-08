@@ -17,10 +17,8 @@ public class TextSender extends Thread{
     private String message;
 
     public void setMessage(String message) {
-        this.message = Halo.user.getUserName()+":"+message;
+        this.message = message;
     }
-    
-    public TextSender(){}
 
     public TextSender(String ip, int port){
         this.ip = ip;
@@ -38,7 +36,7 @@ public class TextSender extends Thread{
         try {
             Socket socket = new Socket(ip, port);
             DataOutputStream dout=new DataOutputStream(socket.getOutputStream());
-            dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_SENDTEXT, message.getBytes("UTF8")));
+            dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_SEND_TEXT, message.getBytes("UTF8")));
             dout.flush();
         } catch (IOException ex) {
             System.out.println("Không thể gửi tin.");

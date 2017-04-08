@@ -9,8 +9,7 @@ import halo.models.User;
 import halo.ui.ChatForm;
 import halo.ui.FriendList;
 import halo.ui.LoginForm;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import static halo.ui.LoginForm.MD5Encode;
 import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -32,9 +31,9 @@ public class Halo {
      */
     public static void main(String[] args) {
         
-        new LoginForm().setVisible(true);
+        //new LoginForm().setVisible(true);
         
-        /*
+        
         Scanner scanner=new Scanner(System.in);
         
         System.out.print("username: ");
@@ -63,6 +62,6 @@ public class Halo {
             }
         } catch (SQLException ex) {
             Logger.getLogger(Halo.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
+        }
     }
 }
