@@ -3,11 +3,8 @@ package halo;
 import halo.models.Packet;
 import halo.models.User;
 import halo.ui.ChatForm;
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -107,15 +104,16 @@ public class Listener extends Thread {
             while ((clientSocket = serverSocket.accept()) != null) {
                 DataInputStream din = new DataInputStream(clientSocket.getInputStream());
                 
-                if (din.read() == Packet.INITITALIZE) {
+                if (din.readByte() == Packet.INITITALIZE) {
                     int b = 0;
                     String fromUsername = "";
                     while ((b = din.read()) != Packet.SEPARATOR) {
                         fromUsername += (char) b;
                     }
-
+                    
                     byte[] cmd_buff = new byte[3];
                     din.read(cmd_buff, 0, cmd_buff.length);
+                    
                     switch (new String(cmd_buff)) {
                         case Packet.COMMAND_SEND_TEXT:
                             try {
@@ -125,10 +123,12 @@ public class Listener extends Thread {
                                 System.out.println("Message is empty");
                             }
                             break;
+                        case Packet.COMMAND_SEND_FILE:
+                            new FileReceiver(clientSocket).start();
+                            break;
                     }
                 }
 
-                
                 /*
                 InputStream is = clientSocket.getInputStream();
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));

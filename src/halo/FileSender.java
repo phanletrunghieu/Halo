@@ -46,9 +46,10 @@ public class FileSender extends Thread {
     @Override
     public void run() {
         try {
+            dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_SEND_FILE, "Begin sending".getBytes("UTF8")));
+            
             dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_SEND_FILE_NAME, this.file.getName().getBytes("UTF8")));
             RandomAccessFile rw = new RandomAccessFile(this.file, "r");
-            
             
             long current_file_pointer = 0;
             boolean loop_break = false;
@@ -56,7 +57,7 @@ public class FileSender extends Thread {
                 if (din.read() == Packet.INITITALIZE) {
                     int b = 0;
                     String fromUsername = "";
-                    while ((b = din.read()) != Packet.SEPARATOR) {
+                    while ((b = din.readByte()) != Packet.SEPARATOR) {
                         fromUsername += (char) b;
                     }
                     

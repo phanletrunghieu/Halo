@@ -10,10 +10,11 @@ import java.io.UnsupportedEncodingException;
  */
 public class Packet {
 
-    public static byte INITITALIZE = 2;
-    public static byte SEPARATOR = 4;
+    public final static byte INITITALIZE = 2;
+    public final static byte SEPARATOR = 4;
 
-    public final static String COMMAND_SEND_TEXT = "123";
+    public final static String COMMAND_SEND_TEXT = "122";
+    public final static String COMMAND_SEND_FILE = "123";
     public final static String COMMAND_SEND_FILE_NAME = "124";
     public final static String COMMAND_REQUEST_SEND_FILE_DATA = "125";
     public final static String COMMAND_SEND_FILE_DATA = "126";
@@ -22,6 +23,7 @@ public class Packet {
     /**
      *
      * @param fromUsername
+     * @param type
      * @param command 123: gửi text. 124: gửi file name.
      * @param data
      * @return
