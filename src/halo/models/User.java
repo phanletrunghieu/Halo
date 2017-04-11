@@ -28,6 +28,7 @@ public class User {
     private int portListening=-1;
     
     private String status;
+    private boolean isOnline;
     
     public User() {}
     
@@ -119,6 +120,20 @@ public class User {
         
         Map<String, String> data=new HashMap<>();
         data.put("port", String.valueOf(portListening));
+        connection.Update(tableName, "username='"+userName+"'", data);
+    }
+    
+    public boolean isIsOnline() {
+        return isOnline;
+    }
+    public void setIsOnline(boolean isOnline) throws SQLException {
+        this.isOnline = isOnline;
+        
+        Map<String, String> data=new HashMap<>();
+        if(isOnline)
+            data.put("isOnline", "1");
+        else
+            data.put("isOnline", "0");
         connection.Update(tableName, "username='"+userName+"'", data);
     }
     
