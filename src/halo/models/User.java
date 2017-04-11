@@ -148,6 +148,9 @@ public class User {
         return new User(resultSet.getString("username"), resultSet.getString("password"), resultSet.getString("status"), resultSet.getString("ip"), resultSet.getInt("port"));
     }
     
+    public String toString(){
+        return this.userName;
+    }
     @Override
     public boolean equals(Object obj) {
         if (obj == null)
