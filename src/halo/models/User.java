@@ -28,6 +28,7 @@ public class User {
     private int portListening=-1;
     
     private String status;
+    private boolean isOnline;
     
     public User() {}
     
@@ -120,6 +121,13 @@ public class User {
         Map<String, String> data=new HashMap<>();
         data.put("port", String.valueOf(portListening));
         connection.Update(tableName, "username='"+userName+"'", data);
+    }
+    
+    public boolean isIsOnline() {
+        return isOnline;
+    }
+    public void setIsOnline(boolean isOnline) {
+        this.isOnline = isOnline;
     }
     
     public ArrayList<User> getFriends() throws SQLException, ClassNotFoundException{
