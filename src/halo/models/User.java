@@ -126,8 +126,15 @@ public class User {
     public boolean isIsOnline() {
         return isOnline;
     }
-    public void setIsOnline(boolean isOnline) {
+    public void setIsOnline(boolean isOnline) throws SQLException {
         this.isOnline = isOnline;
+        
+        Map<String, String> data=new HashMap<>();
+        if(isOnline)
+            data.put("isOnline", "1");
+        else
+            data.put("isOnline", "0");
+        connection.Update(tableName, "username='"+userName+"'", data);
     }
     
     public ArrayList<User> getFriends() throws SQLException, ClassNotFoundException{
