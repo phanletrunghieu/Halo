@@ -61,8 +61,7 @@ public class Listener extends Thread {
 
     public Listener() {
         try {
-            ArrayList<InetAddress> iPs = getIPs();
-            inetAddress = iPs.get(0);
+            inetAddress = Setting.GetIP();
 
             serverSocket = new ServerSocket(0, 100, inetAddress);
             port = serverSocket.getLocalPort();
@@ -81,24 +80,6 @@ public class Listener extends Thread {
         } catch (IOException ex) {
             Logger.getLogger(Listener.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    private ArrayList<InetAddress> getIPs() throws SocketException {
-        ArrayList<InetAddress> ips = new ArrayList<>();
-
-        Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
-        while (e.hasMoreElements()) {
-            NetworkInterface n = e.nextElement();
-            Enumeration<InetAddress> ee = n.getInetAddresses();
-            while (ee.hasMoreElements()) {
-                InetAddress i = ee.nextElement();
-
-                if (!i.isLoopbackAddress() && i instanceof Inet4Address) {
-                    ips.add(i);
-                }
-            }
-        }
-        return ips;
     }
 
     @Override
