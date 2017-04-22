@@ -1,5 +1,6 @@
 package halo;
 
+import halo.file.FileReceiver;
 import halo.models.Packet;
 import halo.models.User;
 import halo.ui.ChatForm;

@@ -1,5 +1,6 @@
-package halo;
+package halo.file;
 
+import halo.Halo;
 import halo.models.Packet;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

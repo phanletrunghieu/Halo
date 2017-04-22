@@ -6,7 +6,7 @@
 package halo.ui;
 
 import halo.ui.call.RequestCallForm;
-import halo.FileSender;
+import halo.file.FileSender;
 import halo.Halo;
 import halo.Listener;
 import halo.TextSender;
