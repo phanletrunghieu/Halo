@@ -10,6 +10,7 @@ import halo.ui.ChatForm;
 import halo.ui.FriendList;
 import halo.ui.LoginForm;
 import static halo.ui.LoginForm.MD5Encode;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -33,7 +34,6 @@ public class Halo {
     public static void main(String[] args) {
         
         //new LoginForm().setVisible(true);
-        
         
         Scanner scanner=new Scanner(System.in);
         

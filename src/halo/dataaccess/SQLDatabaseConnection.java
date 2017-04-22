@@ -5,6 +5,7 @@
  */
 package halo.dataaccess;
 
+import halo.Setting;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -19,7 +20,7 @@ import java.util.Map;
  */
 public class SQLDatabaseConnection {
     private final String connectString =  
-                    "jdbc:sqlserver://localhost:1433;"
+                    "jdbc:sqlserver://"+Setting.GetServerIP()+":"+Setting.GetServerPort()+";"
                     + "database=halo;"
                     + "user=sa;"
                     + "password=123456789;"
