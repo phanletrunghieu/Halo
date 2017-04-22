@@ -23,9 +23,11 @@ import javax.sound.sampled.LineUnavailableException;
  * @author Phan Hieu
  */
 public class ReceiveCallForm extends javax.swing.JFrame {
+    
     private User user;
     private Socket socket;
     private DataOutputStream dout;
+
     /**
      * Creates new form ReceiveCallForm
      */
@@ -41,7 +43,7 @@ public class ReceiveCallForm extends javax.swing.JFrame {
         initComponents();
         
         this.user = user;
-        jLabel1.setText(this.user.getUserName()+jLabel1.getText());
+        jLabel1.setText(this.user.getUserName() + jLabel1.getText());
     }
 
     /**
@@ -57,8 +59,7 @@ public class ReceiveCallForm extends javax.swing.JFrame {
         btnOK = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(300, 115));
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -115,8 +116,9 @@ public class ReceiveCallForm extends javax.swing.JFrame {
     private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
         try {
             new VoicePlayer().start();
-            
             dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_ACCEPT_CALL, "I accept".getBytes("UTF8")));
+            btnOK.setEnabled(false);
+            jLabel1.setText("Đang trò chuyện với " + this.user.getUserName());
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(ReceiveCallForm.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException | LineUnavailableException ex) {
@@ -130,8 +132,10 @@ public class ReceiveCallForm extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         try {
-            if(Halo.isCalling)
+            if (Halo.isCalling) {
+                Halo.isCalling = false;
                 dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_CANCEL_CALL, "I don't wanna talk to you".getBytes("UTF8")));
+            }
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(ReceiveCallForm.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

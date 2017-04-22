@@ -23,7 +23,7 @@ public class RequestCallForm extends javax.swing.JFrame {
 
     private User user;
     public DataOutputStream dout;
-    
+
     /**
      * Creates new form RequestCallingForm
      */
@@ -39,7 +39,11 @@ public class RequestCallForm extends javax.swing.JFrame {
     }
 
     public void UserBusy() {
-        jLabel1.setText(this.user.getUserName()+" is busy.");
+        jLabel1.setText(this.user.getUserName() + " đang bận.");
+    }
+
+    public void Accept() {
+        jLabel1.setText("Đang trò chuyện với " + this.user.getUserName());
     }
 
     /**
@@ -54,7 +58,7 @@ public class RequestCallForm extends javax.swing.JFrame {
         btnCancel = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -69,7 +73,7 @@ public class RequestCallForm extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("Calling ");
+        jLabel1.setText("Đang gọi ");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -101,8 +105,10 @@ public class RequestCallForm extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         try {
-            if(Halo.isCalling)
+            if (Halo.isCalling) {
+                Halo.isCalling = false;
                 dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_CANCEL_CALL, "I don't wanna talk to you".getBytes("UTF8")));
+            }
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(ReceiveCallForm.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
