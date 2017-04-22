@@ -71,6 +71,7 @@ public class VoiceClient extends Thread {
                             break;
                         case Packet.COMMAND_ACCEPT_CALL:
                             new VoiceRecorder(this.server_ip, this.port).start();
+                            requestCallingForm.Accept();
                             break;
                     }
                 }
