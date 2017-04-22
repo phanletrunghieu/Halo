@@ -21,8 +21,9 @@ import java.util.logging.Logger;
 import javax.sound.sampled.LineUnavailableException;
 
 /**
- * Gửi yêu cầu cuộc gọi
- * Chờ tín hiệu: huỷ cuộc gọi, đối phương đang bận, chấp nhận cuộc gọi (bắt đầu ghi âm và gửi đi)
+ * Gửi yêu cầu cuộc gọi Chờ tín hiệu: huỷ cuộc gọi, đối phương đang bận, chấp
+ * nhận cuộc gọi (bắt đầu ghi âm và gửi đi)
+ *
  * @author Phan Hieu
  */
 public class VoiceClient extends Thread {
@@ -41,6 +42,7 @@ public class VoiceClient extends Thread {
         this.socket = new Socket(ip, port);
         this.din = new DataInputStream(socket.getInputStream());
         this.dout = new DataOutputStream(socket.getOutputStream());
+        requestCallingForm.dout = dout;
         this.requestCallingForm = requestCallingForm;
     }
 

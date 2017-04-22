@@ -10,13 +10,10 @@ import halo.models.Packet;
 import halo.models.User;
 import halo.voice.VoicePlayer;
 import java.awt.event.WindowEvent;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.sampled.LineUnavailableException;
@@ -122,9 +119,7 @@ public class ReceiveCallForm extends javax.swing.JFrame {
             dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_ACCEPT_CALL, "I accept".getBytes("UTF8")));
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(ReceiveCallForm.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(ReceiveCallForm.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (LineUnavailableException ex) {
+        } catch (IOException | LineUnavailableException ex) {
             Logger.getLogger(ReceiveCallForm.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnOKActionPerformed

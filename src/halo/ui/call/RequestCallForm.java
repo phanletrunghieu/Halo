@@ -5,7 +5,15 @@
  */
 package halo.ui.call;
 
+import halo.Halo;
+import halo.models.Packet;
 import halo.models.User;
+import java.awt.event.WindowEvent;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -14,7 +22,8 @@ import halo.models.User;
 public class RequestCallForm extends javax.swing.JFrame {
 
     private User user;
-
+    public DataOutputStream dout;
+    
     /**
      * Creates new form RequestCallingForm
      */
@@ -46,10 +55,19 @@ public class RequestCallForm extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(300, 115));
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         btnCancel.setLabel("Cancel");
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Calling ");
 
@@ -76,6 +94,21 @@ public class RequestCallForm extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+    }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            if(Halo.isCalling)
+                dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_CANCEL_CALL, "I don't wanna talk to you".getBytes("UTF8")));
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(ReceiveCallForm.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ReceiveCallForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
