@@ -3,7 +3,10 @@ package halo;
 import halo.models.Packet;
 import halo.models.User;
 import halo.ui.ChatForm;
+import halo.ui.call.ReceiveCallForm;
+import halo.voice.VoiceServer;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -103,17 +106,18 @@ public class Listener extends Thread {
         try {
             while ((clientSocket = serverSocket.accept()) != null) {
                 DataInputStream din = new DataInputStream(clientSocket.getInputStream());
-                
+                DataOutputStream dout = new DataOutputStream(clientSocket.getOutputStream());
+
                 if (din.readByte() == Packet.INITITALIZE) {
                     int b = 0;
                     String fromUsername = "";
                     while ((b = din.read()) != Packet.SEPARATOR) {
                         fromUsername += (char) b;
                     }
-                    
+
                     byte[] cmd_buff = new byte[3];
                     din.read(cmd_buff, 0, cmd_buff.length);
-                    
+
                     switch (new String(cmd_buff)) {
                         case Packet.COMMAND_SEND_TEXT:
                             try {
@@ -125,6 +129,16 @@ public class Listener extends Thread {
                             break;
                         case Packet.COMMAND_SEND_FILE:
                             new FileReceiver(clientSocket).start();
+                            break;
+                        case Packet.COMMAND_REQUEST_CALL:
+                            if (Halo.isCalling) {
+                                dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_USER_BUSY, "I'm busy".getBytes("UTF8")));
+                            } else {
+                                Halo.isCalling = true;
+                                ReceiveCallForm receiveCallForm=new ReceiveCallForm(new User(fromUsername), clientSocket);
+                                receiveCallForm.setVisible(true);
+                                new VoiceServer(clientSocket, receiveCallForm).start();
+                            }
                             break;
                     }
                 }

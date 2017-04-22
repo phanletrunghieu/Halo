@@ -5,9 +5,12 @@
  */
 package halo.ui;
 
+import halo.ui.call.RequestCallForm;
 import halo.FileSender;
+import halo.Halo;
 import halo.Listener;
 import halo.TextSender;
+import halo.voice.VoiceClient;
 import halo.models.User;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -57,6 +60,7 @@ public class ChatForm extends javax.swing.JFrame {
         txtMessage = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         btnSendFile = new javax.swing.JButton();
+        btnCall = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -84,6 +88,13 @@ public class ChatForm extends javax.swing.JFrame {
             }
         });
 
+        btnCall.setLabel("Call");
+        btnCall.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCallActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -99,12 +110,18 @@ public class ChatForm extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1)))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnCall)
+                .addGap(46, 46, 46))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
+                .addContainerGap(15, Short.MAX_VALUE)
+                .addComponent(btnCall)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -135,6 +152,18 @@ public class ChatForm extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_btnSendFileActionPerformed
+
+    private void btnCallActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCallActionPerformed
+        try {
+            Halo.isCalling=true;
+            RequestCallForm requestCallingForm = new RequestCallForm(user);
+            requestCallingForm.setVisible(true);
+            new VoiceClient(this.user.getAddrListening(), this.user.getPortListening(), requestCallingForm).start();
+        } catch (IOException ex) {
+            Halo.isCalling=false;
+            Logger.getLogger(ChatForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnCallActionPerformed
 
     /**
      * @param args the command line arguments
@@ -172,6 +201,7 @@ public class ChatForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCall;
     private javax.swing.JButton btnSendFile;
     private javax.swing.JButton jButton1;
     private javax.swing.JScrollPane jScrollPane1;

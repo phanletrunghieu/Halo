@@ -14,18 +14,15 @@ import java.util.logging.Logger;
  * @author Phan Hieu
  */
 public class FileReceiver extends Thread {
+
     private Socket socket;
     private DataInputStream din;
     private DataOutputStream dout;
 
-    public FileReceiver(Socket socket) {
+    public FileReceiver(Socket socket) throws IOException {
         this.socket = socket;
-        try {
-            din = new DataInputStream(this.socket.getInputStream());
-            dout = new DataOutputStream(this.socket.getOutputStream());
-        } catch (IOException ex) {
-            Logger.getLogger(FileReceiver.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        din = new DataInputStream(this.socket.getInputStream());
+        dout = new DataOutputStream(this.socket.getOutputStream());
     }
 
     @Override
@@ -35,13 +32,13 @@ public class FileReceiver extends Thread {
         boolean loop_break = false;
         while (true) {
             try {
-                if (din.readByte()== Packet.INITITALIZE){
+                if (din.readByte() == Packet.INITITALIZE) {
                     int b = 0;
                     String fromUsername = "";
                     while ((b = din.read()) != Packet.SEPARATOR) {
                         fromUsername += (char) b;
                     }
-                    
+
                     byte[] cmd_buff = new byte[3];
                     din.read(cmd_buff, 0, cmd_buff.length);
                     byte[] recv_data = Packet.ReadStream(din);
@@ -72,9 +69,8 @@ public class FileReceiver extends Thread {
             } catch (IOException ex) {
                 System.out.println("Close connection");
             }
-            
+
         }
     }
-    
-    
+
 }

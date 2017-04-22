@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 public class Halo {
 
     public static User user;
+    public static boolean isCalling=false;
     
     public Halo() {
     }

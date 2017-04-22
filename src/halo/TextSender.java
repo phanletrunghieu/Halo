@@ -12,7 +12,6 @@ import java.net.Socket;
 public class TextSender extends Thread{
     private String ip;
     private int port;
-    private Socket socket;
     
     private String message;
 
