@@ -97,7 +97,7 @@ public class SQLDatabaseConnection {
         for (Map.Entry<String, String> entry : values.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            set.append(key).append("='").append(value).append("?', ");
+            set.append(key).append("='").append(value).append("', ");
         }
         set.deleteCharAt(set.length() - 2);
 

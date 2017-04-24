@@ -53,12 +53,13 @@ public class VoicePlayer extends Thread {
                 buffer = incoming.getData();
                 audio_out.write(buffer, 0, buffer.length);
             } catch (IOException ex) {
-                Logger.getLogger(VoicePlayer.class.getName()).log(Level.SEVERE, null, ex);
+                din.close();
             }
         }
         
         audio_out.close();
         audio_out.drain();
+        din.close();
     }
 
     private AudioFormat getaudioformat() {
