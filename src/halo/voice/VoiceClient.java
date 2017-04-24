@@ -70,6 +70,7 @@ public class VoiceClient extends Thread {
                             requestCallingForm.dispatchEvent(new WindowEvent(requestCallingForm, WindowEvent.WINDOW_CLOSING));
                             break;
                         case Packet.COMMAND_ACCEPT_CALL:
+                            new VoicePlayer().start();
                             new VoiceRecorder(this.server_ip, this.port).start();
                             requestCallingForm.Accept();
                             break;

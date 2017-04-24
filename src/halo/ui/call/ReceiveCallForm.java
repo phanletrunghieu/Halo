@@ -9,6 +9,7 @@ import halo.Halo;
 import halo.models.Packet;
 import halo.models.User;
 import halo.voice.VoicePlayer;
+import halo.voice.VoiceRecorder;
 import java.awt.event.WindowEvent;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -115,8 +116,13 @@ public class ReceiveCallForm extends javax.swing.JFrame {
 
     private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
         try {
+            //nhận âm thanh & phát
             new VoicePlayer().start();
             dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_ACCEPT_CALL, "I accept".getBytes("UTF8")));
+            
+            //ghi âm & gửi
+            new VoiceRecorder(this.user.getAddrListening(), this.user.getPortListening()).start();
+            
             btnOK.setEnabled(false);
             jLabel1.setText("Đang trò chuyện với " + this.user.getUserName());
         } catch (UnsupportedEncodingException ex) {
