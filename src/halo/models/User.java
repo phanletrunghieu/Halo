@@ -7,7 +7,6 @@ package halo.models;
 
 import halo.dataaccess.SQLDatabaseConnection;
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
