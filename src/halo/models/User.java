@@ -33,10 +33,9 @@ public class User {
 
     private String status;
     private boolean isOnline;
-
-    public User() {
-    }
-
+    
+    public User() {}
+    
     public User(String userName) throws SQLException {
         this.userName = userName;
         connection = new SQLDatabaseConnection();
@@ -143,26 +142,24 @@ public class User {
         data.put("port", String.valueOf(portListening));
         connection.Update(tableName, "username='" + userName + "'", data);
     }
-
+    
     public boolean isIsOnline() {
         return isOnline;
     }
-
     public void setIsOnline(boolean isOnline) throws SQLException {
         this.isOnline = isOnline;
-
-        Map<String, String> data = new HashMap<>();
-        if (isOnline) {
+        
+        Map<String, String> data=new HashMap<>();
+        if(isOnline)
             data.put("isOnline", "1");
-        } else {
+        else
             data.put("isOnline", "0");
-        }
-        connection.Update(tableName, "username='" + userName + "'", data);
+        connection.Update(tableName, "username='"+userName+"'", data);
     }
-
-    public ArrayList<User> getFriends() throws SQLException, ClassNotFoundException {
-        ResultSet resultSet = connection.Select("friend", "username1='" + userName + "' OR username2='" + userName + "'");
-        ArrayList<User> users = new ArrayList<>();
+    
+    public ArrayList<User> getFriends() throws SQLException, ClassNotFoundException{
+        ResultSet resultSet = connection.Select("friend", "username1='"+userName+"' OR username2='"+userName+"'");
+        ArrayList<User> users=new ArrayList<>();
         while (resultSet.next()) {
             String username1 = resultSet.getString("username1");
             String username2 = resultSet.getString("username2");
@@ -185,7 +182,10 @@ public class User {
         resultSet.next();
         return new User(resultSet.getString("username"), resultSet.getString("password"), resultSet.getBytes("avatar"), resultSet.getString("status"), resultSet.getString("ip"), resultSet.getInt("port"));
     }
-
+    
+    public String toString(){
+        return this.userName;
+    }
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
