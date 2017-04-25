@@ -91,20 +91,22 @@ public class SQLDatabaseConnection {
     }
 
     public int Update(String table, String where, Map<String, String> values) throws SQLException {
-        StringBuilder sql = new StringBuilder("UPDATE " + table + " ");
-
-        StringBuilder set = new StringBuilder("SET ");
+        StringBuilder sql = new StringBuilder("UPDATE " + table + " SET ");
         for (Map.Entry<String, String> entry : values.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            set.append(key).append("='").append(value).append("', ");
+            sql.append(key).append("=?, ");
         }
-        set.deleteCharAt(set.length() - 2);
-
-        sql.append(set).append(" WHERE ").append(where);
-
-        Statement statement = con.createStatement();
-        return statement.executeUpdate(sql.toString());
+        sql.deleteCharAt(sql.length() - 2);
+        sql.append(" WHERE ").append(where);
+        
+        PreparedStatement preparedStatement = con.prepareStatement(sql.toString());
+        int i = 1;
+        for (Map.Entry<String, String> entry : values.entrySet()) {
+            String value = entry.getValue();
+            preparedStatement.setString(i++, value);
+        }
+        return preparedStatement.executeUpdate();
     }
 
     public int Update(String table, String where, String column, InputStream inputStream) throws SQLException {

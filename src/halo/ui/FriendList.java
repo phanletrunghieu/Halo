@@ -9,14 +9,12 @@ import halo.models.User;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
-import javax.swing.ListModel;
 
 /**
  *
@@ -107,11 +105,6 @@ public class FriendList extends javax.swing.JFrame {
                 statusTextFieldActionPerformed(evt);
             }
         });
-        statusTextField.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                statusTextFieldKeyPressed(evt);
-            }
-        });
 
         avatarPanel.setBackground(new java.awt.Color(0, 0, 0));
         avatarPanel.setPreferredSize(new java.awt.Dimension(80, 80));
@@ -186,10 +179,6 @@ public class FriendList extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void statusTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_statusTextFieldKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_statusTextFieldKeyPressed
 
     private void statusTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_statusTextFieldActionPerformed
         try {

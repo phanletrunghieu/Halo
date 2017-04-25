@@ -33,9 +33,9 @@ public class Halo {
      */
     public static void main(String[] args) {
         
-        //new LoginForm().setVisible(true);
+        new LoginForm().setVisible(true);
         
-        Scanner scanner=new Scanner(System.in);
+        /*Scanner scanner=new Scanner(System.in);
         
         System.out.print("username: ");
         String username=scanner.nextLine();
@@ -63,6 +63,6 @@ public class Halo {
             }
         } catch (SQLException ex) {
             Logger.getLogger(Halo.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }*/
     }
 }
