@@ -6,15 +6,24 @@
 package halo.ui;
 
 import halo.models.User;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -40,12 +49,19 @@ public class FriendList extends javax.swing.JFrame {
     }
 
     public void updateInfo() {
-        setUsername();
-        getFriends();
-    }
-
-    public void setUsername() {
         userNameLabel.setText(this.user.getUserName());
+
+        if (this.user.getAvatar()!=null && this.user.getAvatar().length > 0) {
+            try {
+                BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(this.user.getAvatar()));
+                Image newimg = bufferedImage.getScaledInstance(avatarLabel.getWidth(), avatarLabel.getHeight(), java.awt.Image.SCALE_SMOOTH);
+                avatarLabel.setIcon(new ImageIcon(newimg));
+            } catch (IOException ex) {
+                Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        getFriends();
     }
 
     public void getFriends() {
@@ -53,16 +69,14 @@ public class FriendList extends javax.swing.JFrame {
             List<User> friends = this.user.getFriends();
             if (friends != null) {
                 friendList.removeAll();
-                DefaultListModel<String> defaultListModel=new DefaultListModel<>();
+                DefaultListModel<String> defaultListModel = new DefaultListModel<>();
                 for (User friend : friends) {
                     defaultListModel.addElement(friend.toString());
                 }
                 friendList.setModel(defaultListModel);
             }
 
-        } catch (SQLException ex) {
-            Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
+        } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -113,8 +127,6 @@ public class FriendList extends javax.swing.JFrame {
                 avatarPanelMouseClicked(evt);
             }
         });
-
-        avatarLabel.setText("jLabel1");
 
         javax.swing.GroupLayout avatarPanelLayout = new javax.swing.GroupLayout(avatarPanel);
         avatarPanel.setLayout(avatarPanelLayout);
@@ -191,28 +203,38 @@ public class FriendList extends javax.swing.JFrame {
 
     private void onlineComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onlineComboBoxActionPerformed
         // setting online status 
-        if ("Online".equals(onlineComboBox.getSelectedItem().toString())) {
-            try {
+        try {
+            if ("Online".equals(onlineComboBox.getSelectedItem().toString())) {
                 this.user.setIsOnline(true);
-            } catch (SQLException ex) {
-                Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-            try {
+            } else {
                 this.user.setIsOnline(false);
-            } catch (SQLException ex) {
-                Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } catch (SQLException ex) {
+            Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_onlineComboBoxActionPerformed
 
     private void avatarPanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_avatarPanelMouseClicked
         // TODO add your handling code here:
         JFileChooser jfc = new JFileChooser();
+        jfc.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "png", "bmp"));
         int returnVal = jfc.showOpenDialog(jfc);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = jfc.getSelectedFile();
-            avatarLabel.setIcon(new ImageIcon(file.getAbsolutePath()));
+            try {
+                File file = jfc.getSelectedFile();
+                this.user.setAvatar(Files.readAllBytes(file.toPath()));
+
+                ImageIcon imageIcon = new ImageIcon(file.getAbsolutePath());
+                Image image = imageIcon.getImage();
+                Image newimg = image.getScaledInstance(avatarLabel.getWidth(), avatarLabel.getHeight(), java.awt.Image.SCALE_SMOOTH);
+                avatarLabel.setIcon(new ImageIcon(newimg));
+            } catch (OutOfMemoryError ex) {
+                System.out.println("File có kích thước quá lớn");
+            } catch (SQLException ex) {
+                System.out.println("Lỗi CSDL");
+            } catch (IOException ex) {
+                Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }//GEN-LAST:event_avatarPanelMouseClicked
 

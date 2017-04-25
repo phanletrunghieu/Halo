@@ -136,9 +136,6 @@
       </Layout>
       <SubComponents>
         <Component class="javax.swing.JLabel" name="avatarLabel">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="jLabel1"/>
-          </Properties>
         </Component>
       </SubComponents>
     </Container>
