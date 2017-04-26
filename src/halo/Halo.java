@@ -51,5 +51,6 @@ public class Halo {
         } catch (SQLException ex) {
             Logger.getLogger(Halo.class.getName()).log(Level.SEVERE, null, ex);
         }*/
+
     }
 }
