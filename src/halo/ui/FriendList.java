@@ -17,6 +17,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -44,9 +45,9 @@ public class FriendList extends javax.swing.JFrame {
     }
 
     public void updateInfo() {
+        this.setTitle("Halo chat view ");
         userNameLabel.setText(this.user.getUserName());
-
-        if (this.user.getAvatar()!=null && this.user.getAvatar().length > 0) {
+        if (this.user.getAvatar() != null && this.user.getAvatar().length > 0) {
             try {
                 BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(this.user.getAvatar()));
                 Image newimg = bufferedImage.getScaledInstance(avatarLabel.getWidth(), avatarLabel.getHeight(), java.awt.Image.SCALE_SMOOTH);
@@ -55,7 +56,6 @@ public class FriendList extends javax.swing.JFrame {
                 Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
         getFriends();
     }
 
@@ -64,11 +64,12 @@ public class FriendList extends javax.swing.JFrame {
             List<User> friends = this.user.getFriends();
             if (friends != null) {
                 friendList.removeAll();
-                DefaultListModel<String> defaultListModel = new DefaultListModel<>();
-                for (User friend : friends) {
-                    defaultListModel.addElement(friend.toString());
-                }
+                DefaultListModel<User> defaultListModel = new DefaultListModel<>();
+                friends.forEach((friend) -> {
+                    defaultListModel.addElement(friend);
+                });
                 friendList.setModel(defaultListModel);
+                friendList.setCellRenderer(new UserRenderer());
             }
 
         } catch (SQLException | ClassNotFoundException ex) {
@@ -92,14 +93,10 @@ public class FriendList extends javax.swing.JFrame {
         avatarLabel = new javax.swing.JLabel();
         userNameLabel = new javax.swing.JLabel();
         onlineComboBox = new javax.swing.JComboBox<>();
+        findFriendBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        friendList.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         friendList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         friendList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
@@ -149,6 +146,13 @@ public class FriendList extends javax.swing.JFrame {
             }
         });
 
+        findFriendBtn.setText("Find friend");
+        findFriendBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                findFriendBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -164,7 +168,11 @@ public class FriendList extends javax.swing.JFrame {
                             .addComponent(userNameLabel)
                             .addComponent(onlineComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 190, Short.MAX_VALUE))
-                    .addComponent(statusTextField))
+                    .addComponent(statusTextField)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(findFriendBtn)
+                        .addGap(9, 9, 9)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -179,7 +187,9 @@ public class FriendList extends javax.swing.JFrame {
                         .addComponent(userNameLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(onlineComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(findFriendBtn)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(53, 53, 53))
         );
@@ -234,7 +244,6 @@ public class FriendList extends javax.swing.JFrame {
     }//GEN-LAST:event_avatarPanelMouseClicked
 
     private void friendListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_friendListValueChanged
-        // TODO add your handling code here:
         if (!evt.getValueIsAdjusting()) {
             try {
                 JList source = (JList) evt.getSource();
@@ -245,6 +254,23 @@ public class FriendList extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_friendListValueChanged
+
+    private void findFriendBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findFriendBtnActionPerformed
+        String userToAdd = JOptionPane.showInputDialog("Please input the friend you want to add ! ", "Add friend ");
+        try {
+            User userAdded = User.getUser(userToAdd);
+            
+            if (userAdded == null) {
+                JOptionPane.showConfirmDialog(rootPane, "User doesn't exists");
+            } else {
+                this.user.addFriend(userAdded);
+                JOptionPane.showConfirmDialog(rootPane, "User " + userAdded.getUserName() + " added !");
+            }
+            this.updateInfo();
+        } catch (SQLException ex) {
+            Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_findFriendBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -284,7 +310,8 @@ public class FriendList extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel avatarLabel;
     private javax.swing.JPanel avatarPanel;
-    private javax.swing.JList<String> friendList;
+    private javax.swing.JButton findFriendBtn;
+    private javax.swing.JList<User> friendList;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JComboBox<String> onlineComboBox;
     private javax.swing.JTextField statusTextField;
