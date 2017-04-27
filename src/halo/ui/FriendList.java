@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +29,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class FriendList extends javax.swing.JFrame {
 
     private User user;
-
+    private List<User> chattingUsers = new ArrayList<User>(); 
     /**
      * Creates new form FriendList
      */
@@ -94,13 +95,14 @@ public class FriendList extends javax.swing.JFrame {
         userNameLabel = new javax.swing.JLabel();
         onlineComboBox = new javax.swing.JComboBox<>();
         findFriendBtn = new javax.swing.JButton();
+        logOutBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         friendList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        friendList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                friendListValueChanged(evt);
+        friendList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                friendListMouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(friendList);
@@ -124,17 +126,11 @@ public class FriendList extends javax.swing.JFrame {
         avatarPanel.setLayout(avatarPanelLayout);
         avatarPanelLayout.setHorizontalGroup(
             avatarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(avatarPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(avatarLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(avatarLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
         );
         avatarPanelLayout.setVerticalGroup(
             avatarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(avatarPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(avatarLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(avatarLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
         );
 
         userNameLabel.setText("username");
@@ -153,6 +149,13 @@ public class FriendList extends javax.swing.JFrame {
             }
         });
 
+        logOutBtn.setText("Log out");
+        logOutBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                logOutBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -160,25 +163,25 @@ public class FriendList extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addGroup(layout.createSequentialGroup()
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE)
+                    .addComponent(statusTextField)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(avatarPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(userNameLabel)
                             .addComponent(onlineComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 190, Short.MAX_VALUE))
-                    .addComponent(statusTextField)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(findFriendBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(findFriendBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(logOutBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(9, 9, 9)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(54, Short.MAX_VALUE)
                 .addComponent(statusTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -186,12 +189,14 @@ public class FriendList extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(userNameLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(onlineComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(onlineComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(logOutBtn))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
                 .addComponent(findFriendBtn)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(53, 53, 53))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         pack();
@@ -243,34 +248,41 @@ public class FriendList extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_avatarPanelMouseClicked
 
-    private void friendListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_friendListValueChanged
-        if (!evt.getValueIsAdjusting()) {
-            try {
-                JList source = (JList) evt.getSource();
-                String selected = source.getSelectedValue().toString();
-                new ChatForm(new User(selected)).setVisible(true);
-            } catch (SQLException ex) {
-                Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }//GEN-LAST:event_friendListValueChanged
-
     private void findFriendBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findFriendBtnActionPerformed
-        String userToAdd = JOptionPane.showInputDialog("Please input the friend you want to add ! ", "Add friend ");
+        String userToAdd = JOptionPane.showInputDialog("Please input the friend you want to add ! ", "Friend ");
         try {
             User userAdded = User.getUser(userToAdd);
-            
             if (userAdded == null) {
-                JOptionPane.showConfirmDialog(rootPane, "User doesn't exists");
+                JOptionPane.showMessageDialog(null, "User doesn't exists", "Error!", JOptionPane.ERROR_MESSAGE);
             } else {
                 this.user.addFriend(userAdded);
-                JOptionPane.showConfirmDialog(rootPane, "User " + userAdded.getUserName() + " added !");
+                JOptionPane.showMessageDialog(null, "User " + userAdded.getUserName() + " added !", "Added !", JOptionPane.INFORMATION_MESSAGE);
             }
             this.updateInfo();
         } catch (SQLException ex) {
             Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_findFriendBtnActionPerformed
+
+    private void logOutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logOutBtnActionPerformed
+        this.dispose();
+        new LoginForm().setVisible(true);
+    }//GEN-LAST:event_logOutBtnActionPerformed
+
+    private void friendListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_friendListMouseClicked
+        try {
+            JList source = (JList) evt.getSource();
+            if(evt.getClickCount() == 2){ // Check double click on item
+            String selected = source.getSelectedValue().toString();
+                if(!this.chattingUsers.contains(new User(selected))){ // Check if user is already chatting 
+                    chattingUsers.add(new User(selected));
+                    new ChatForm(new User(selected)).setVisible(true);               
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+    }//GEN-LAST:event_friendListMouseClicked
 
     /**
      * @param args the command line arguments
@@ -313,6 +325,7 @@ public class FriendList extends javax.swing.JFrame {
     private javax.swing.JButton findFriendBtn;
     private javax.swing.JList<User> friendList;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton logOutBtn;
     private javax.swing.JComboBox<String> onlineComboBox;
     private javax.swing.JTextField statusTextField;
     private javax.swing.JLabel userNameLabel;
