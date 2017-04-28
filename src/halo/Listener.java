@@ -96,16 +96,20 @@ public class Listener extends Thread {
                     byte[] cmd_buff = new byte[3];
                     din.read(cmd_buff, 0, cmd_buff.length);
 
+                    byte[] data = Packet.ReadStream(din);
+
                     switch (new String(cmd_buff)) {
                         case Packet.COMMAND_SEND_TEXT:
                             try {
-                                String message = new String(Packet.ReadStream(din));
-                                ShowChatForm(fromUsername, message);
+                                ChatForm chatForm = ShowChatForm(fromUsername);
+                                chatForm.receiveNewMessage(new String(data));
                             } catch (NullPointerException ex) {
                                 System.out.println("Message is empty");
                             }
                             break;
                         case Packet.COMMAND_SEND_FILE:
+                            ChatForm chatForm = ShowChatForm(fromUsername);
+                            chatForm.receiveNewMessage("Nhận file: " + new String(data));
                             new FileReceiver(clientSocket).start();
                             break;
                         case Packet.COMMAND_REQUEST_CALL:
@@ -113,48 +117,20 @@ public class Listener extends Thread {
                                 dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_USER_BUSY, "I'm busy".getBytes("UTF8")));
                             } else {
                                 Halo.isCalling = true;
-                                ReceiveCallForm receiveCallForm=new ReceiveCallForm(new User(fromUsername), clientSocket);
+                                ReceiveCallForm receiveCallForm = new ReceiveCallForm(new User(fromUsername), clientSocket);
                                 receiveCallForm.setVisible(true);
                                 new VoiceServer(clientSocket, receiveCallForm).start();
                             }
                             break;
                     }
                 }
-
-                /*
-                InputStream is = clientSocket.getInputStream();
-                BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                String line = br.readLine();
-
-                if (line != null) {
-                    String[] data = line.split(":");
-
-                    int vt = -1;
-                    for (int i = 0; i < usersChatting.size(); i++) {
-                        ChatForm chatForm = usersChatting.get(i);
-                        if (chatForm.getUser().getUserName().equals(data[0])) {
-                            vt = i;
-                        }
-                    }
-
-                    ChatForm chatForm;
-                    if (vt == -1) {
-                        chatForm = new ChatForm(new User(data[0]));
-                        usersChatting.add(chatForm);
-                    } else {
-                        chatForm = usersChatting.get(vt);
-                    }
-                    chatForm.setVisible(true);
-                    chatForm.receiveNewMessage(data[1]);
-                }*/
-                //String ip=(((InetSocketAddress) clientSocket.getRemoteSocketAddress()).getAddress()).toString().replace("/","");
             }
         } catch (IOException | SQLException ex) {
             Logger.getLogger(Listener.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private void ShowChatForm(String username, String message) throws SQLException {
+    private ChatForm ShowChatForm(String username) throws SQLException {
         int vt = -1;
         for (int i = 0; i < usersChatting.size(); i++) {
             ChatForm chatForm = usersChatting.get(i);
@@ -171,6 +147,6 @@ public class Listener extends Thread {
             chatForm = usersChatting.get(vt);
         }
         chatForm.setVisible(true);
-        chatForm.receiveNewMessage(message);
+        return chatForm;
     }
 }

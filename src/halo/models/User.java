@@ -101,7 +101,13 @@ public class User {
         this.avatar = avatar;
         connection.Update(tableName, "username='" + userName + "'", "avatar", new ByteArrayInputStream(this.avatar));
     }
-
+    
+    public void deleteAvatar() throws SQLException{
+        Map<String, String> data = new HashMap<>();
+        data.put("avatar", null);
+        connection.Update(tableName, "username='" + userName + "'", data);
+    }
+    
     public String getStatus() {
         return status;
     }

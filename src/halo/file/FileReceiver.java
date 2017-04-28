@@ -66,7 +66,7 @@ public class FileReceiver extends Thread {
                     socket.close();
                 }
             } catch (IOException ex) {
-                System.out.println("Close connection");
+                break;
             }
 
         }

@@ -9,8 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -96,12 +94,16 @@ public class SQLDatabaseConnection {
         }
         sql.deleteCharAt(sql.length() - 2);
         sql.append(" WHERE ").append(where);
-        
+
         PreparedStatement preparedStatement = con.prepareStatement(sql.toString());
         int i = 1;
         for (Map.Entry<String, String> entry : values.entrySet()) {
             String value = entry.getValue();
-            preparedStatement.setString(i++, value);
+            if (value != null) {
+                preparedStatement.setString(i++, value);
+            } else {
+                preparedStatement.setNull(i++, java.sql.Types.BLOB);
+            }
         }
         return preparedStatement.executeUpdate();
     }
