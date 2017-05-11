@@ -26,29 +26,26 @@ import java.util.logging.Logger;
 public class Listener extends Thread {
 
     private static ArrayList<ChatForm> usersChatting = new ArrayList<>();
-    private static List<String> usersChattingName = new ArrayList<>();
     
-    public static List<String> getusersChattingName(){
-        return usersChattingName;
-    }
-    
-    public static void addUserChattingName(String name) {
-        usersChattingName.add(name);
-    }
-
-    public static void removeUserChattingName(String name) {
-        usersChattingName.remove(name);
-    }    
     public static void addUserChatting(ChatForm chatForm) {
-        if(!usersChattingName.contains(chatForm.getUser().getUserName())){ // if it doesn't already exists
-            usersChattingName.add(chatForm.getUser().getUserName()); // then add it to both list
+        if(!isChattingWith(chatForm.getUser().getUserName())){ // if it doesn't already exists
             usersChatting.add(chatForm);
         }
     }
 
     public static void removeUserChatting(ChatForm chatForm) {
         usersChatting.remove(chatForm);
-        usersChattingName.remove(chatForm.getUser().getUserName());
+        chatForm.dispose();
+    }
+    
+    public static boolean isChattingWith(String userName)
+    {
+        for (int i = 0; i < usersChatting.size(); i++) {
+            if(usersChatting.get(i).getUser().getUserName().equals(userName)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private InetAddress inetAddress;

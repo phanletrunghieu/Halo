@@ -119,9 +119,6 @@ public class ChatForm extends javax.swing.JFrame {
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 formWindowClosed(evt);
             }
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                formWindowClosing(evt);
-            }
         });
 
         btnSendText.setBackground(new java.awt.Color(210, 82, 127));
@@ -185,6 +182,7 @@ public class ChatForm extends javax.swing.JFrame {
 
         jScrollPane1.setBorder(null);
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
         jPanelChat.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
@@ -243,7 +241,6 @@ public class ChatForm extends javax.swing.JFrame {
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         Listener.removeUserChatting(this);
-        Listener.removeUserChattingName(this.getUser().getUserName());
     }//GEN-LAST:event_formWindowClosed
 
     private void btnSendFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendFileActionPerformed
@@ -286,10 +283,6 @@ public class ChatForm extends javax.swing.JFrame {
     private void jPanelChatComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_jPanelChatComponentResized
         UpdateRightPostion();
     }//GEN-LAST:event_jPanelChatComponentResized
-
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        // TODO add your handling code here:
-    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments

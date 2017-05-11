@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,7 +29,6 @@ public class FriendList extends javax.swing.JFrame {
 
     private User user;
     private ImageIcon defaultUserIcon;
-    //private List<User> chattingUsers = new ArrayList<User>();
 
     /**
      * Creates new form FriendList
@@ -292,19 +290,19 @@ public class FriendList extends javax.swing.JFrame {
             // Check double click on item
             String selected = source.getSelectedValue().toString();
             try {
-                if (!Listener.getusersChattingName().contains(selected)) { // Check if we are already chatting with this user 
-                    Listener.addUserChattingName(selected);
+                if (!Listener.isChattingWith(selected)) { // Check if we are already chatting with this user 
+                    //Listener.addUserChattingName(selected);
                     new ChatForm(new User(selected)).setVisible(true);
-                }   
-            } catch (SQLException ex) {
-                    Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            } catch (SQLException ex) {
+                Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }//GEN-LAST:event_friendListMouseClicked
 
     /**
-         * @param args the command line arguments
-         */
+     * @param args the command line arguments
+     */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
