@@ -8,6 +8,7 @@ import halo.TextSender;
 import halo.voice.VoiceClient;
 import halo.models.User;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -19,6 +20,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JScrollBar;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -26,15 +28,15 @@ import javax.swing.border.EmptyBorder;
  * @author Phan Hieu
  */
 public class ChatForm extends javax.swing.JFrame {
-    
+
     private User user;
     private ImageIcon defaultUserIcon;
     private ArrayList<JLabel> myMessage;
     private ArrayList<JLabel> yourMessage;
-    
+
     private final int MESSAGE_MARGIN = 3;
     private int MESSAGE_CURRENT_Y_POSTION = 0;
-    
+
     public User getUser() {
         return user;
     }
@@ -46,12 +48,12 @@ public class ChatForm extends javax.swing.JFrame {
         this.user = new User();
         Init();
     }
-    
+
     public ChatForm(User user) {
         this.user = user;
         Init();
     }
-    
+
     private void Init() {
         initComponents();
         Listener.addUserChatting(this);
@@ -65,7 +67,7 @@ public class ChatForm extends javax.swing.JFrame {
         } catch (IOException ex) {
             defaultUserIcon = new ImageIcon();
         }
-        
+
         this.setTitle(this.user.getUserName());
 
         //set your avatar
@@ -109,7 +111,7 @@ public class ChatForm extends javax.swing.JFrame {
         txtMessage = new javax.swing.JTextField();
         btnCall = new javax.swing.JButton();
         btnSendFile = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        jScrollPaneChat = new javax.swing.JScrollPane();
         jPanelChat = new javax.swing.JPanel();
         yourAvatar = new javax.swing.JLabel();
         myAvatar = new javax.swing.JLabel();
@@ -180,9 +182,8 @@ public class ChatForm extends javax.swing.JFrame {
             }
         });
 
-        jScrollPane1.setBorder(null);
-        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        jScrollPaneChat.setBorder(null);
+        jScrollPaneChat.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         jPanelChat.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
@@ -190,7 +191,7 @@ public class ChatForm extends javax.swing.JFrame {
             }
         });
         jPanelChat.setLayout(null);
-        jScrollPane1.setViewportView(jPanelChat);
+        jScrollPaneChat.setViewportView(jPanelChat);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -207,7 +208,7 @@ public class ChatForm extends javax.swing.JFrame {
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSendText, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1))
+                    .addComponent(jScrollPaneChat))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(yourAvatar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -220,7 +221,7 @@ public class ChatForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1)
+                        .addComponent(jScrollPaneChat)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnCall, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -321,7 +322,7 @@ public class ChatForm extends javax.swing.JFrame {
     private javax.swing.JButton btnSendText;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanelChat;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPaneChat;
     private javax.swing.JLabel myAvatar;
     private javax.swing.JTextField txtMessage;
     private javax.swing.JLabel yourAvatar;
@@ -330,7 +331,7 @@ public class ChatForm extends javax.swing.JFrame {
     public void receiveNewMessage(String message) {
         DisplayYourMessage(message);
     }
-    
+
     private void DisplayYourMessage(String message) {
         //init
         javax.swing.JLabel jLabelMessage = new javax.swing.JLabel(message);
@@ -339,7 +340,7 @@ public class ChatForm extends javax.swing.JFrame {
         jLabelMessage.setFont(new java.awt.Font("Segoe UI", 0, 14));
         jLabelMessage.setOpaque(true);
         jLabelMessage.setBorder(new EmptyBorder(10, 10, 10, 10));
-        jLabelMessage.setSize((int) jLabelMessage.getPreferredSize().getWidth(), (int) jLabelMessage.getPreferredSize().getHeight());
+        jLabelMessage.setSize(jLabelMessage.getPreferredSize().width, jLabelMessage.getPreferredSize().height);
         jLabelMessage.setLocation(MESSAGE_MARGIN, MESSAGE_CURRENT_Y_POSTION + MESSAGE_MARGIN);
 
         //store
@@ -347,12 +348,17 @@ public class ChatForm extends javax.swing.JFrame {
 
         //display
         //jPanelChat.add(jLabelMessage, new org.netbeans.lib.awtextra.AbsoluteConstraints(MESSAGE_MARGIN, MESSAGE_CURRENT_Y_POSTION + MESSAGE_MARGIN, -1, -1));
+        if (MESSAGE_CURRENT_Y_POSTION + MESSAGE_MARGIN + jLabelMessage.getPreferredSize().height > jPanelChat.getPreferredSize().height) {
+            jPanelChat.setPreferredSize(new Dimension(jPanelChat.getSize().width, MESSAGE_CURRENT_Y_POSTION + MESSAGE_MARGIN * 2 + jLabelMessage.getPreferredSize().height));
+            JScrollBar vertical = jScrollPaneChat.getVerticalScrollBar();
+            vertical.setValue(vertical.getMaximum());
+        }
         jPanelChat.add(jLabelMessage);
         jPanelChat.revalidate();
         jPanelChat.repaint();
-        MESSAGE_CURRENT_Y_POSTION += jLabelMessage.getPreferredSize().getHeight() + MESSAGE_MARGIN;
+        MESSAGE_CURRENT_Y_POSTION += jLabelMessage.getPreferredSize().height + MESSAGE_MARGIN;
     }
-    
+
     private void DisplayMyMessage(String message) {
         //init
         javax.swing.JLabel jLabelMessage = new javax.swing.JLabel(message);
@@ -361,23 +367,28 @@ public class ChatForm extends javax.swing.JFrame {
         jLabelMessage.setFont(new java.awt.Font("Segoe UI", 0, 14));
         jLabelMessage.setOpaque(true);
         jLabelMessage.setBorder(new EmptyBorder(10, 10, 10, 10));
-        jLabelMessage.setSize((int) jLabelMessage.getPreferredSize().getWidth(), (int) jLabelMessage.getPreferredSize().getHeight());
-        jLabelMessage.setLocation(jPanelChat.getWidth() - (int) jLabelMessage.getPreferredSize().getWidth() - MESSAGE_MARGIN, MESSAGE_CURRENT_Y_POSTION + MESSAGE_MARGIN);
+        jLabelMessage.setSize(jLabelMessage.getPreferredSize().width, jLabelMessage.getPreferredSize().height);
+        jLabelMessage.setLocation(jPanelChat.getWidth() - jLabelMessage.getPreferredSize().width - MESSAGE_MARGIN, MESSAGE_CURRENT_Y_POSTION + MESSAGE_MARGIN);
 
         //store
         myMessage.add(jLabelMessage);
 
         //display
         //jPanelChat.add(jLabelMessage, new org.netbeans.lib.awtextra.AbsoluteConstraints(jPanelChat.getWidth() - (int) jLabelMessage.getPreferredSize().getWidth() - MESSAGE_MARGIN, MESSAGE_CURRENT_Y_POSTION + MESSAGE_MARGIN, -1, -1));
+        if (MESSAGE_CURRENT_Y_POSTION + MESSAGE_MARGIN + jLabelMessage.getPreferredSize().height > jPanelChat.getPreferredSize().height) {
+            jPanelChat.setPreferredSize(new Dimension(jPanelChat.getSize().width, MESSAGE_CURRENT_Y_POSTION + MESSAGE_MARGIN * 2 + jLabelMessage.getPreferredSize().height));
+            JScrollBar vertical = jScrollPaneChat.getVerticalScrollBar();
+            vertical.setValue(vertical.getMaximum());
+        }
         jPanelChat.add(jLabelMessage);
         jPanelChat.revalidate();
         jPanelChat.repaint();
-        MESSAGE_CURRENT_Y_POSTION += jLabelMessage.getPreferredSize().getHeight() + MESSAGE_MARGIN;
+        MESSAGE_CURRENT_Y_POSTION += jLabelMessage.getPreferredSize().height + MESSAGE_MARGIN;
     }
-    
+
     private void UpdateRightPostion() {
         for (JLabel jLabel : myMessage) {
-            jLabel.setLocation(jPanelChat.getWidth() - (int) jLabel.getPreferredSize().getWidth() - MESSAGE_MARGIN, jLabel.getLocation().y);
+            jLabel.setLocation(jPanelChat.getWidth() - jLabel.getPreferredSize().width - MESSAGE_MARGIN, jLabel.getLocation().y);
         }
     }
 }
