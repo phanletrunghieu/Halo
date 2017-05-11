@@ -288,7 +288,7 @@ public class FriendList extends javax.swing.JFrame {
     private void friendListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_friendListMouseClicked
         // TODO add your handling code here:
         JList source = (JList) evt.getSource();
-        if (evt.getClickCount() == 2) {
+        if (evt.getClickCount() >= 2) {
             // Check double click on item
             String selected = source.getSelectedValue().toString();
             try {
