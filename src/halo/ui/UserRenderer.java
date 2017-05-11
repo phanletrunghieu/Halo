@@ -52,6 +52,7 @@ public class UserRenderer extends JLabel implements ListCellRenderer<User> {
         if(user.getStatus() != null){
             status = user.getStatus();
         }
+        this.setText( "<html>" + user.getUserName() + "<br/>" + onlineStatus + "<br/>" + status + "</html>");
         return this;
     }
 
