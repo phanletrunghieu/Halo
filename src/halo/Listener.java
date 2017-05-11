@@ -14,6 +14,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,13 +26,29 @@ import java.util.logging.Logger;
 public class Listener extends Thread {
 
     private static ArrayList<ChatForm> usersChatting = new ArrayList<>();
+    private static List<String> usersChattingName = new ArrayList<>();
+    
+    public static List<String> getusersChattingName(){
+        return usersChattingName;
+    }
+    
+    public static void addUserChattingName(String name) {
+        usersChattingName.add(name);
+    }
 
+    public static void removeUserChattingName(String name) {
+        usersChattingName.remove(name);
+    }    
     public static void addUserChatting(ChatForm chatForm) {
-        usersChatting.add(chatForm);
+        if(!usersChattingName.contains(chatForm.getUser().getUserName())){ // if it doesn't already exists
+            usersChattingName.add(chatForm.getUser().getUserName()); // then add it to both list
+            usersChatting.add(chatForm);
+        }
     }
 
     public static void removeUserChatting(ChatForm chatForm) {
         usersChatting.remove(chatForm);
+        usersChattingName.remove(chatForm.getUser().getUserName());
     }
 
     private InetAddress inetAddress;

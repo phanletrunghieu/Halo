@@ -119,6 +119,9 @@ public class ChatForm extends javax.swing.JFrame {
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 formWindowClosed(evt);
             }
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
         });
 
         btnSendText.setBackground(new java.awt.Color(210, 82, 127));
@@ -163,7 +166,6 @@ public class ChatForm extends javax.swing.JFrame {
         btnCall.setBorder(null);
         btnCall.setBorderPainted(false);
         btnCall.setContentAreaFilled(false);
-        btnCall.setOpaque(false);
         btnCall.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCallActionPerformed(evt);
@@ -175,7 +177,6 @@ public class ChatForm extends javax.swing.JFrame {
         btnSendFile.setBorder(null);
         btnSendFile.setBorderPainted(false);
         btnSendFile.setContentAreaFilled(false);
-        btnSendFile.setOpaque(false);
         btnSendFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSendFileActionPerformed(evt);
@@ -242,6 +243,7 @@ public class ChatForm extends javax.swing.JFrame {
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         Listener.removeUserChatting(this);
+        Listener.removeUserChattingName(this.getUser().getUserName());
     }//GEN-LAST:event_formWindowClosed
 
     private void btnSendFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendFileActionPerformed
@@ -284,6 +286,10 @@ public class ChatForm extends javax.swing.JFrame {
     private void jPanelChatComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_jPanelChatComponentResized
         UpdateRightPostion();
     }//GEN-LAST:event_jPanelChatComponentResized
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments

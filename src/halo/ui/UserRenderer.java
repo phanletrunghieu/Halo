@@ -44,11 +44,14 @@ public class UserRenderer extends JLabel implements ListCellRenderer<User> {
         }
         String onlineStatus = "";
         if(user.isIsOnline()){
-            onlineStatus = "Is online";
+            onlineStatus = "Online";
         } else {
-            onlineStatus = "Is offline";
+            onlineStatus = "Offline";
         }
-        this.setText(user.getUserName() + " " + onlineStatus + " " + user.getStatus());
+        String status = "";
+        if(user.getStatus() != null){
+            status = user.getStatus();
+        }
         return this;
     }
 

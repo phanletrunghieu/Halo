@@ -1,5 +1,6 @@
 package halo.ui;
 
+import halo.Listener;
 import halo.models.User;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -8,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,6 +30,7 @@ public class FriendList extends javax.swing.JFrame {
 
     private User user;
     private ImageIcon defaultUserIcon;
+    //private List<User> chattingUsers = new ArrayList<User>();
 
     /**
      * Creates new form FriendList
@@ -127,9 +130,9 @@ public class FriendList extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         friendList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        friendList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                friendListValueChanged(evt);
+        friendList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                friendListMouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(friendList);
@@ -230,18 +233,6 @@ public class FriendList extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_onlineComboBoxActionPerformed
 
-    private void friendListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_friendListValueChanged
-        if (!evt.getValueIsAdjusting()) {
-            try {
-                JList source = (JList) evt.getSource();
-                String selected = source.getSelectedValue().toString();
-                new ChatForm(new User(selected)).setVisible(true);
-            } catch (SQLException ex) {
-                Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }//GEN-LAST:event_friendListValueChanged
-
     private void findFriendBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findFriendBtnActionPerformed
         String userToAdd = JOptionPane.showInputDialog("Please input the friend you want to add ! ", "Add friend ");
         try {
@@ -294,9 +285,26 @@ public class FriendList extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItemDeleteActionPerformed
 
+    private void friendListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_friendListMouseClicked
+        // TODO add your handling code here:
+        JList source = (JList) evt.getSource();
+        if (evt.getClickCount() == 2) {
+            // Check double click on item
+            String selected = source.getSelectedValue().toString();
+            try {
+                if (!Listener.getusersChattingName().contains(selected)) { // Check if we are already chatting with this user 
+                    Listener.addUserChattingName(selected);
+                    new ChatForm(new User(selected)).setVisible(true);
+                }   
+            } catch (SQLException ex) {
+                    Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
+                }
+        }
+    }//GEN-LAST:event_friendListMouseClicked
+
     /**
-     * @param args the command line arguments
-     */
+         * @param args the command line arguments
+         */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
