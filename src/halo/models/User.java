@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -37,13 +39,14 @@ public class User {
         refreshData();
     }
 
-    public User(String userName, String hashPassword, byte[] avatar, String status, String addrListening, int portListening) throws SQLException {
+    public User(String userName, String hashPassword, byte[] avatar, String status, String addrListening, int portListening, boolean isOnline) throws SQLException {
         this.userName = userName;
         this.hashPassword = hashPassword;
         this.avatar = avatar;
         this.status = status;
         this.addrListening = addrListening;
         this.portListening = portListening;
+        this.isOnline = isOnline;
         connection = new SQLDatabaseConnection();
     }
 
@@ -67,6 +70,7 @@ public class User {
         this.addrListening = resultSet.getString("ip");
         this.portListening = resultSet.getInt("port");
         this.status = resultSet.getString("status");
+        this.isOnline = resultSet.getInt("isOnline") == 1 ? true : false;
     }
 
     public String getUserName() {
@@ -101,13 +105,13 @@ public class User {
         this.avatar = avatar;
         connection.Update(tableName, "username='" + userName + "'", "avatar", new ByteArrayInputStream(this.avatar));
     }
-    
-    public void deleteAvatar() throws SQLException{
+
+    public void deleteAvatar() throws SQLException {
         Map<String, String> data = new HashMap<>();
         data.put("avatar", null);
         connection.Update(tableName, "username='" + userName + "'", data);
     }
-    
+
     public String getStatus() {
         return status;
     }
@@ -160,7 +164,7 @@ public class User {
         connection.Update(tableName, "username='" + userName + "'", data);
     }
 
-    public ArrayList<User> getFriends() throws SQLException, ClassNotFoundException {
+    public ArrayList<User> getFriends() throws SQLException {
         ResultSet resultSet = connection.Select("friend", "username1='" + userName + "' OR username2='" + userName + "'");
         ArrayList<User> users = new ArrayList<>();
         while (resultSet.next()) {
@@ -179,18 +183,41 @@ public class User {
         return users;
     }
 
-    public static User getUser(String username) throws SQLException {
-        SQLDatabaseConnection connection = new SQLDatabaseConnection();
-        ResultSet resultSet = connection.Select(tableName, "username='" + username + "'");
-        resultSet.next();
-        return new User(resultSet.getString("username"), resultSet.getString("password"), resultSet.getBytes("avatar"), resultSet.getString("status"), resultSet.getString("ip"), resultSet.getInt("port"));
+    public static User getUser(String username) {
+        try {
+            SQLDatabaseConnection connection = new SQLDatabaseConnection();
+            ResultSet resultSet = connection.Select(tableName, "username='" + username + "'");
+            resultSet.next();
+            return new User(resultSet.getString("username"), resultSet.getString("password"), resultSet.getBytes("avatar"), resultSet.getString("status"), resultSet.getString("ip"), resultSet.getInt("port"), resultSet.getInt("isOnline") == 1);
+        } catch (SQLException ex) {
+            return null;
+        }
     }
 
-    public void addFriend(User friend) throws SQLException{
-        Map<String,String> relationship = new HashMap<String,String>();
-        relationship.put(this.getUserName(), friend.getUserName());
+    public void addFriend(User friend) throws SQLException {
+        Map<String, String> relationship = new HashMap<String, String>();
+        relationship.put("username1", this.getUserName());
+        relationship.put("username2", friend.getUserName());
         connection.Insert("friend", relationship);
     }
+
+    public void unFriend(User friend) throws SQLException {
+        Map<String, String> where = new HashMap<String, String>();
+        where.put("username1", friend.getUserName());
+        where.put("username2", userName);
+        connection.Delete("friend", where, "AND");
+        
+        where = new HashMap<String, String>();
+        where.put("username2", friend.getUserName());
+        where.put("username1", userName);
+        connection.Delete("friend", where, "AND");
+    }
+
+    public boolean isFriendOf(User user) throws SQLException {
+        ArrayList<User> friends = this.getFriends();
+        return friends.contains(user);
+    }
+
     public String toString() {
         return this.userName;
     }

@@ -50,15 +50,31 @@ public class SQLDatabaseConnection {
         return statement.executeQuery(sql);
     }
 
-    public int Delete(String table, String where) throws SQLException {
-        String sql = "DELETE FROM ? WHERE ?;";
-        PreparedStatement ps = con.prepareStatement(sql);
-        ps.setString(1, table);
-        ps.setString(2, where);
-        return ps.executeUpdate();
+    public int Delete(String table, Map<String, String> where, String condition) throws SQLException {
+        //build query
+        StringBuilder sql = new StringBuilder("DELETE FROM " + table + " WHERE ");
+        
+        for (Map.Entry<String, String> entry : where.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            sql.append(key).append("=? ").append(condition).append(" ");
+        }
+        sql.delete(sql.length()-1-condition.length(), sql.length()-1);
+        
+        //add value to query
+        PreparedStatement preparedStatement = con.prepareStatement(sql.toString());
+        int i = 1;
+        for (Map.Entry<String, String> entry : where.entrySet()) {
+            String value = entry.getValue();
+            preparedStatement.setString(i++, value);
+        }
+        
+        //execute
+        return preparedStatement.executeUpdate();
     }
 
     public int Insert(String table, Map<String, String> values) throws SQLException {
+        //build query
         StringBuilder sb1 = new StringBuilder("INSERT INTO " + table + " (");
         StringBuilder sb2 = new StringBuilder("VALUES (");
         for (Map.Entry<String, String> entry : values.entrySet()) {
@@ -66,7 +82,7 @@ public class SQLDatabaseConnection {
             String value = entry.getValue();
 
             sb1.append(key).append(", ");
-            sb2.append("'").append(value).append("', ");
+            sb2.append("?, ");
         }
         sb1.deleteCharAt(sb1.length() - 1);
         sb1.deleteCharAt(sb1.length() - 1);
@@ -80,12 +96,21 @@ public class SQLDatabaseConnection {
         sql.append(sb1);
         sql.append(sb2);
         sql.append(";");
-
-        Statement statement = con.createStatement();
-        return statement.executeUpdate(sql.toString());
+        
+        //add value to query
+        PreparedStatement preparedStatement = con.prepareStatement(sql.toString());
+        int i = 1;
+        for (Map.Entry<String, String> entry : values.entrySet()) {
+            String value = entry.getValue();
+            preparedStatement.setString(i++, value);
+        }
+        
+        //execute
+        return preparedStatement.executeUpdate();
     }
 
     public int Update(String table, String where, Map<String, String> values) throws SQLException {
+        //build query
         StringBuilder sql = new StringBuilder("UPDATE " + table + " SET ");
         for (Map.Entry<String, String> entry : values.entrySet()) {
             String key = entry.getKey();
@@ -95,6 +120,7 @@ public class SQLDatabaseConnection {
         sql.deleteCharAt(sql.length() - 2);
         sql.append(" WHERE ").append(where);
 
+        //add value to query
         PreparedStatement preparedStatement = con.prepareStatement(sql.toString());
         int i = 1;
         for (Map.Entry<String, String> entry : values.entrySet()) {
@@ -105,6 +131,8 @@ public class SQLDatabaseConnection {
                 preparedStatement.setNull(i++, java.sql.Types.BLOB);
             }
         }
+        
+        //execute
         return preparedStatement.executeUpdate();
     }
 

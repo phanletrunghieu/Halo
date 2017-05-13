@@ -28,7 +28,7 @@ public class Listener extends Thread {
     private static ArrayList<ChatForm> usersChatting = new ArrayList<>();
     
     public static void addUserChatting(ChatForm chatForm) {
-        if(!isChattingWith(chatForm.getUser().getUserName())){ // if it doesn't already exists
+        if(!isChattingWith(chatForm.getUser())){ // if it doesn't already exists
             usersChatting.add(chatForm);
         }
     }
@@ -38,10 +38,10 @@ public class Listener extends Thread {
         chatForm.dispose();
     }
     
-    public static boolean isChattingWith(String userName)
+    public static boolean isChattingWith(User user)
     {
         for (int i = 0; i < usersChatting.size(); i++) {
-            if(usersChatting.get(i).getUser().getUserName().equals(userName)){
+            if(usersChatting.get(i).getUser().equals(user)){
                 return true;
             }
         }
