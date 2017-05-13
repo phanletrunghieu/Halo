@@ -14,7 +14,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -116,7 +115,7 @@ public class Listener extends Thread {
                         case Packet.COMMAND_SEND_TEXT:
                             try {
                                 ChatForm chatForm = ShowChatForm(fromUsername);
-                                chatForm.receiveNewMessage(new String(data));
+                                chatForm.receiveNewMessage(Halo.rsa.decrypt(new String(data)));
                             } catch (NullPointerException ex) {
                                 System.out.println("Message is empty");
                             }

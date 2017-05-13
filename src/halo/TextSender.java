@@ -1,6 +1,7 @@
 package halo;
 
 import halo.models.Packet;
+import halo.models.User;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -10,32 +11,20 @@ import java.net.Socket;
  * @author Phan Hieu
  */
 public class TextSender extends Thread{
-    private String ip;
-    private int port;
-    
+    private User toUser;
     private String message;
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public TextSender(String ip, int port){
-        this.ip = ip;
-        this.port = port;
-    }
     
-    public TextSender(String ip, int port, String message) {
-        this.ip = ip;
-        this.port = port;
-        setMessage(message);
+    public TextSender(User toUser, String message) {
+        this.toUser=toUser;
+        this.message = message;
     }
 
     @Override
     public void run() {
         try {
-            Socket socket = new Socket(ip, port);
+            Socket socket = new Socket(toUser.getAddrListening(), toUser.getPortListening());
             DataOutputStream dout=new DataOutputStream(socket.getOutputStream());
-            dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_SEND_TEXT, message.getBytes("UTF8")));
+            dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_SEND_TEXT, message.getBytes("UTF8"), toUser.getPublicKeyN(), toUser.getPublicKeyE()));
             dout.flush();
         } catch (IOException ex) {
             System.out.println("Không thể gửi tin.");

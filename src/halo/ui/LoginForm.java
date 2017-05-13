@@ -2,6 +2,7 @@ package halo.ui;
 
 import halo.Halo;
 import halo.Listener;
+import halo.models.AlgorithmRSA;
 import halo.models.User;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
@@ -251,7 +252,13 @@ public class LoginForm extends javax.swing.JFrame {
                 listener.start();
                 Halo.user.setAddrListening(listener.getInetAddress().getHostAddress());
                 Halo.user.setPortListening(listener.getPort());
-
+                
+                Halo.rsa.KeyRSA(256);
+                Halo.user.setPublicKeyN(Halo.rsa.getN().toString());
+                Halo.user.setPublicKeyE(Halo.rsa.getE().toString());
+                System.out.println("N: "+Halo.rsa.getN());
+                System.out.println("E: "+Halo.rsa.getE());
+                System.out.println("D: "+Halo.rsa.getD());
                 new FriendList(Halo.user).setVisible(true);
                 this.dispose();
             } else {

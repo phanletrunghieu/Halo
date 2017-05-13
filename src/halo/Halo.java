@@ -1,5 +1,6 @@
 package halo;
 
+import halo.models.AlgorithmRSA;
 import halo.models.User;
 import halo.ui.LoginForm;
 
@@ -11,6 +12,7 @@ public class Halo {
 
     public static User user;
     public static boolean isCalling=false;
+    public static AlgorithmRSA rsa = new AlgorithmRSA();
     
     public Halo() {
     }

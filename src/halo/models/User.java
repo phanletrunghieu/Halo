@@ -7,8 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -30,6 +28,11 @@ public class User {
     private String status;
     private boolean isOnline;
 
+    //rsa
+    private String publicKeyN;
+    private String publicKeyE;
+
+    // <editor-fold defaultstate="collapsed" desc="Constructor">
     public User() {
     }
 
@@ -39,7 +42,7 @@ public class User {
         refreshData();
     }
 
-    public User(String userName, String hashPassword, byte[] avatar, String status, String addrListening, int portListening, boolean isOnline) throws SQLException {
+    public User(String userName, String hashPassword, byte[] avatar, String status, String addrListening, int portListening, boolean isOnline, String publicKeyN, String publicKeyE) throws SQLException {
         this.userName = userName;
         this.hashPassword = hashPassword;
         this.avatar = avatar;
@@ -47,32 +50,13 @@ public class User {
         this.addrListening = addrListening;
         this.portListening = portListening;
         this.isOnline = isOnline;
+        this.publicKeyN = publicKeyN;
+        this.publicKeyE = publicKeyE;
         connection = new SQLDatabaseConnection();
     }
+    // </editor-fold>
 
-    @Override
-    protected void finalize() {
-        try {
-            setAddrListening(null);
-            setPortListening(0);
-        } catch (SQLException ex) {
-            System.out.println("Destroyed.");
-        }
-    }
-
-    public void refreshData() throws SQLException {
-        ResultSet resultSet = connection.Select(tableName, "username='" + userName + "'");
-        resultSet.next();
-
-        this.userName = resultSet.getString("username");
-        this.hashPassword = resultSet.getString("password");
-        this.avatar = resultSet.getBytes("avatar");
-        this.addrListening = resultSet.getString("ip");
-        this.portListening = resultSet.getInt("port");
-        this.status = resultSet.getString("status");
-        this.isOnline = resultSet.getInt("isOnline") == 1 ? true : false;
-    }
-
+    // <editor-fold defaultstate="collapsed" desc="Properties">
     public String getUserName() {
         return userName;
     }
@@ -164,6 +148,47 @@ public class User {
         connection.Update(tableName, "username='" + userName + "'", data);
     }
 
+    public String getPublicKeyN() {
+        return publicKeyN;
+    }
+    
+    public void setPublicKeyN(String publicKeyN) throws SQLException {
+        this.publicKeyN = publicKeyN;
+        
+        Map<String, String> data = new HashMap<>();
+        data.put("publicKeyN", publicKeyN);
+        connection.Update(tableName, "username='" + userName + "'", data);
+    }
+
+    public String getPublicKeyE() {
+        return publicKeyE;
+    }
+    
+    public void setPublicKeyE(String publicKeyE) throws SQLException {
+        this.publicKeyE = publicKeyE;
+        
+        Map<String, String> data = new HashMap<>();
+        data.put("publicKeyE", publicKeyE);
+        connection.Update(tableName, "username='" + userName + "'", data);
+    }
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="Method">
+    public void refreshData() throws SQLException {
+        ResultSet resultSet = connection.Select(tableName, "username='" + userName + "'");
+        resultSet.next();
+
+        this.userName = resultSet.getString("username");
+        this.hashPassword = resultSet.getString("password");
+        this.avatar = resultSet.getBytes("avatar");
+        this.addrListening = resultSet.getString("ip");
+        this.portListening = resultSet.getInt("port");
+        this.status = resultSet.getString("status");
+        this.isOnline = resultSet.getInt("isOnline") == 1 ? true : false;
+        this.publicKeyN = resultSet.getString("publicKeyN");
+        this.publicKeyE = resultSet.getString("publicKeyE");
+    }
+
     public ArrayList<User> getFriends() throws SQLException {
         ResultSet resultSet = connection.Select("friend", "username1='" + userName + "' OR username2='" + userName + "'");
         ArrayList<User> users = new ArrayList<>();
@@ -188,7 +213,7 @@ public class User {
             SQLDatabaseConnection connection = new SQLDatabaseConnection();
             ResultSet resultSet = connection.Select(tableName, "username='" + username + "'");
             resultSet.next();
-            return new User(resultSet.getString("username"), resultSet.getString("password"), resultSet.getBytes("avatar"), resultSet.getString("status"), resultSet.getString("ip"), resultSet.getInt("port"), resultSet.getInt("isOnline") == 1);
+            return new User(resultSet.getString("username"), resultSet.getString("password"), resultSet.getBytes("avatar"), resultSet.getString("status"), resultSet.getString("ip"), resultSet.getInt("port"), resultSet.getInt("isOnline") == 1, resultSet.getString("publicKeyN"), resultSet.getString("publicKeyE"));
         } catch (SQLException ex) {
             return null;
         }
@@ -206,7 +231,7 @@ public class User {
         where.put("username1", friend.getUserName());
         where.put("username2", userName);
         connection.Delete("friend", where, "AND");
-        
+
         where = new HashMap<String, String>();
         where.put("username2", friend.getUserName());
         where.put("username1", userName);
@@ -217,7 +242,9 @@ public class User {
         ArrayList<User> friends = this.getFriends();
         return friends.contains(user);
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="Override">
     public String toString() {
         return this.userName;
     }
@@ -245,4 +272,15 @@ public class User {
     public int hashCode() {
         return getUserName().hashCode();
     }
+
+    @Override
+    protected void finalize() {
+        try {
+            setAddrListening(null);
+            setPortListening(0);
+        } catch (SQLException ex) {
+            System.out.println("Destroyed.");
+        }
+    }
+    // </editor-fold>
 }

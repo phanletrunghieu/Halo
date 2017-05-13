@@ -270,13 +270,13 @@ public class ChatForm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCallActionPerformed
 
     private void btnSendTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendTextActionPerformed
-        new TextSender(user.getAddrListening(), user.getPortListening(), txtMessage.getText()).start();
+        new TextSender(this.user, txtMessage.getText()).start();
         DisplayMyMessage(txtMessage.getText());
         txtMessage.setText("");
     }//GEN-LAST:event_btnSendTextActionPerformed
 
     private void txtMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMessageActionPerformed
-        new TextSender(user.getAddrListening(), user.getPortListening(), txtMessage.getText()).start();
+        new TextSender(this.user, txtMessage.getText()).start();
         DisplayMyMessage(txtMessage.getText());
         txtMessage.setText("");
     }//GEN-LAST:event_txtMessageActionPerformed
