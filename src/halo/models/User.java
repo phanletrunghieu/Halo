@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -109,6 +111,10 @@ public class User {
     }
 
     public String getAddrListening() {
+        try {
+            refreshData();
+        } catch (SQLException ex) {
+        }
         return addrListening;
     }
 
@@ -121,6 +127,10 @@ public class User {
     }
 
     public int getPortListening() {
+        try {
+            refreshData();
+        } catch (SQLException ex) {
+        }
         return portListening;
     }
 
@@ -184,7 +194,7 @@ public class User {
         this.addrListening = resultSet.getString("ip");
         this.portListening = resultSet.getInt("port");
         this.status = resultSet.getString("status");
-        this.isOnline = resultSet.getInt("isOnline") == 1 ? true : false;
+        this.isOnline = resultSet.getInt("isOnline") == 1;
         this.publicKeyN = resultSet.getString("publicKeyN");
         this.publicKeyE = resultSet.getString("publicKeyE");
     }
