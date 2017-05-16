@@ -10,6 +10,7 @@ import halo.models.User;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -350,8 +351,8 @@ public class ChatForm extends javax.swing.JFrame {
         //jPanelChat.add(jLabelMessage, new org.netbeans.lib.awtextra.AbsoluteConstraints(MESSAGE_MARGIN, MESSAGE_CURRENT_Y_POSTION + MESSAGE_MARGIN, -1, -1));
         if (MESSAGE_CURRENT_Y_POSTION + MESSAGE_MARGIN + jLabelMessage.getPreferredSize().height > jPanelChat.getPreferredSize().height) {
             jPanelChat.setPreferredSize(new Dimension(jPanelChat.getSize().width, MESSAGE_CURRENT_Y_POSTION + MESSAGE_MARGIN * 2 + jLabelMessage.getPreferredSize().height));
-            JScrollBar vertical = jScrollPaneChat.getVerticalScrollBar();
-            vertical.setValue(vertical.getMaximum());
+            jPanelChat.revalidate();
+            jPanelChat.scrollRectToVisible(new Rectangle(0, (int) jPanelChat.getPreferredSize().getHeight(), 10, 10));
         }
         jPanelChat.add(jLabelMessage);
         jPanelChat.revalidate();
@@ -377,8 +378,8 @@ public class ChatForm extends javax.swing.JFrame {
         //jPanelChat.add(jLabelMessage, new org.netbeans.lib.awtextra.AbsoluteConstraints(jPanelChat.getWidth() - (int) jLabelMessage.getPreferredSize().getWidth() - MESSAGE_MARGIN, MESSAGE_CURRENT_Y_POSTION + MESSAGE_MARGIN, -1, -1));
         if (MESSAGE_CURRENT_Y_POSTION + MESSAGE_MARGIN + jLabelMessage.getPreferredSize().height > jPanelChat.getPreferredSize().height) {
             jPanelChat.setPreferredSize(new Dimension(jPanelChat.getSize().width, MESSAGE_CURRENT_Y_POSTION + MESSAGE_MARGIN * 2 + jLabelMessage.getPreferredSize().height));
-            JScrollBar vertical = jScrollPaneChat.getVerticalScrollBar();
-            vertical.setValue(vertical.getMaximum());
+            jPanelChat.revalidate();
+            jPanelChat.scrollRectToVisible(new Rectangle(0, (int) jPanelChat.getPreferredSize().getHeight(), 10, 10));
         }
         jPanelChat.add(jLabelMessage);
         jPanelChat.revalidate();
