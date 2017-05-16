@@ -5,8 +5,11 @@
  */
 package halo.models;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -83,12 +86,20 @@ public class AlgorithmRSA {
     
     //Encrypt the given plaintext message.Use public key decrypt
     public static synchronized String encrypt(String message, String nn, String ee) {
-        return (new BigInteger(message.getBytes())).modPow(new BigInteger(ee), new BigInteger(nn)).toString();
+        try {
+            return (new BigInteger(message.getBytes("UTF8"))).modPow(new BigInteger(ee), new BigInteger(nn)).toString();
+        } catch (UnsupportedEncodingException ex) {
+            return (new BigInteger(message.getBytes())).modPow(new BigInteger(ee), new BigInteger(nn)).toString();
+        }
     }
 
     //Decrypt the given ciphertext message.Use private key decrypt
     public synchronized String decrypt(String message) {
-        return new String((new BigInteger(message)).modPow(d, n).toByteArray());
+        try {
+            return new String((new BigInteger(message)).modPow(d, n).toByteArray(), "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            return new String((new BigInteger(message)).modPow(d, n).toByteArray());
+        }
     }
 
     //Decrypt the given ciphertext message.Use private key decrypt

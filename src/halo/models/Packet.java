@@ -84,7 +84,7 @@ public class Packet {
         }
         
         //encrypt
-        data = AlgorithmRSA.encrypt(new String(data), publicKeyN, publicKeyE).getBytes();
+        data = AlgorithmRSA.encrypt(new String(data), publicKeyN, publicKeyE).getBytes("UTF8");
         
         byte[] initialize = new byte[1];
         initialize[0] = INITITALIZE;

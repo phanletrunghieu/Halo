@@ -1,7 +1,10 @@
 package halo.models;
 
+import halo.Halo;
 import halo.dataaccess.SQLDatabaseConnection;
 import java.io.ByteArrayInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -161,10 +164,10 @@ public class User {
     public String getPublicKeyN() {
         return publicKeyN;
     }
-    
+
     public void setPublicKeyN(String publicKeyN) throws SQLException {
         this.publicKeyN = publicKeyN;
-        
+
         Map<String, String> data = new HashMap<>();
         data.put("publicKeyN", publicKeyN);
         connection.Update(tableName, "username='" + userName + "'", data);
@@ -173,10 +176,10 @@ public class User {
     public String getPublicKeyE() {
         return publicKeyE;
     }
-    
+
     public void setPublicKeyE(String publicKeyE) throws SQLException {
         this.publicKeyE = publicKeyE;
-        
+
         Map<String, String> data = new HashMap<>();
         data.put("publicKeyE", publicKeyE);
         connection.Update(tableName, "username='" + userName + "'", data);
@@ -229,6 +232,17 @@ public class User {
         }
     }
 
+    public static void registNewUser(String userName, String password) throws SQLException {
+        User user = getUser(userName);
+        if (user == null) {
+            SQLDatabaseConnection connection = new SQLDatabaseConnection();
+            Map<String, String> data = new HashMap<>();
+            data.put("username", userName);
+            data.put("password", MD5Encode(password));
+            connection.Insert(tableName, data);
+        }
+    }
+
     public void addFriend(User friend) throws SQLException {
         Map<String, String> relationship = new HashMap<String, String>();
         relationship.put("username1", this.getUserName());
@@ -251,6 +265,30 @@ public class User {
     public boolean isFriendOf(User user) throws SQLException {
         ArrayList<User> friends = this.getFriends();
         return friends.contains(user);
+    }
+
+    public boolean equalsPassword(String password) {
+        return this.hashPassword.equals(MD5Encode(password));
+    }
+
+    private static String MD5Encode(String s) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(s.getBytes());
+
+            byte byteData[] = md.digest();
+
+            //convert the byte to hex format method 1
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < byteData.length; i++) {
+                sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+            }
+
+            return sb.toString();
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(Halo.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
     // </editor-fold>
 
