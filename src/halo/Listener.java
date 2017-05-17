@@ -14,9 +14,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JLabel;
 
 /**
  * accept connect request from other users
@@ -26,29 +26,25 @@ import java.util.logging.Logger;
 public class Listener extends Thread {
 
     private static ArrayList<ChatForm> usersChatting = new ArrayList<>();
-    private static List<String> usersChattingName = new ArrayList<>();
-    
-    public static List<String> getusersChattingName(){
-        return usersChattingName;
-    }
-    
-    public static void addUserChattingName(String name) {
-        usersChattingName.add(name);
-    }
 
-    public static void removeUserChattingName(String name) {
-        usersChattingName.remove(name);
-    }    
     public static void addUserChatting(ChatForm chatForm) {
-        if(!usersChattingName.contains(chatForm.getUser().getUserName())){ // if it doesn't already exists
-            usersChattingName.add(chatForm.getUser().getUserName()); // then add it to both list
+        if (!isChattingWith(chatForm.getUser())) { // if it doesn't already exists
             usersChatting.add(chatForm);
         }
     }
 
     public static void removeUserChatting(ChatForm chatForm) {
         usersChatting.remove(chatForm);
-        usersChattingName.remove(chatForm.getUser().getUserName());
+        chatForm.dispose();
+    }
+
+    public static boolean isChattingWith(User user) {
+        for (int i = 0; i < usersChatting.size(); i++) {
+            if (usersChatting.get(i).getUser().equals(user)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private InetAddress inetAddress;
@@ -119,15 +115,15 @@ public class Listener extends Thread {
                         case Packet.COMMAND_SEND_TEXT:
                             try {
                                 ChatForm chatForm = ShowChatForm(fromUsername);
-                                chatForm.receiveNewMessage(new String(data));
+                                chatForm.DisplayYourMessage(Halo.rsa.decrypt(new String(data)));
                             } catch (NullPointerException ex) {
                                 System.out.println("Message is empty");
                             }
                             break;
                         case Packet.COMMAND_SEND_FILE:
                             ChatForm chatForm = ShowChatForm(fromUsername);
-                            chatForm.receiveNewMessage("Nhận file: " + new String(data));
-                            new FileReceiver(clientSocket).start();
+                            JLabel jLabelReceive = chatForm.DisplayYourMessage("Nhận file: " + new String(data) + " (000%)");
+                            new FileReceiver(clientSocket, jLabelReceive).start();
                             break;
                         case Packet.COMMAND_REQUEST_CALL:
                             if (Halo.isCalling) {

@@ -5,24 +5,35 @@ import halo.models.Packet;
 import halo.models.User;
 import halo.voice.VoicePlayer;
 import halo.voice.VoiceRecorder;
+import java.awt.Image;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.ImageIcon;
 
 /**
  *
  * @author Phan Hieu
  */
 public class ReceiveCallForm extends javax.swing.JFrame {
-    
+
     private User user;
     private Socket socket;
     private DataOutputStream dout;
+    private ImageIcon defaultUserIcon;
+    private Clip clipRingtone;
 
     /**
      * Creates new form ReceiveCallForm
@@ -31,15 +42,48 @@ public class ReceiveCallForm extends javax.swing.JFrame {
         initComponents();
         this.user = new User();
     }
-    
+
     public ReceiveCallForm(User user, Socket socket) throws IOException {
         this.socket = socket;
         this.dout = new DataOutputStream(this.socket.getOutputStream());
-        
+
         initComponents();
-        
+
         this.user = user;
         jLabel1.setText(this.user.getUserName() + jLabel1.getText());
+        
+        //default avatar
+        try {
+            BufferedImage bufferedImage = ImageIO.read(getClass().getResource("/halo/resources/no-user-image-square.jpg"));
+            Image newimg = bufferedImage.getScaledInstance(yourAvatar.getWidth(), yourAvatar.getHeight(), java.awt.Image.SCALE_SMOOTH);
+            defaultUserIcon = new ImageIcon(newimg);
+        } catch (IOException ex) {
+            defaultUserIcon = new ImageIcon();
+        }
+
+        //set your avatar
+        try {
+            if (this.user.getAvatar() != null && this.user.getAvatar().length > 0) {
+                BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(this.user.getAvatar()));
+                Image newimg = bufferedImage.getScaledInstance(yourAvatar.getWidth(), yourAvatar.getHeight(), java.awt.Image.SCALE_SMOOTH);
+                yourAvatar.setIcon(new ImageIcon(newimg));
+            } else {
+                yourAvatar.setIcon(defaultUserIcon);
+            }
+        } catch (IOException ex) {
+            yourAvatar.setIcon(defaultUserIcon);
+        }
+        
+        try {
+            //play ringtone
+            AudioInputStream ringtone=AudioSystem.getAudioInputStream(getClass().getResource("/halo/resources/phone-ringtone.wav"));
+            clipRingtone=AudioSystem.getClip();
+            clipRingtone.open(ringtone);
+            clipRingtone.start();
+            clipRingtone.loop(Clip.LOOP_CONTINUOUSLY);
+        } catch (UnsupportedAudioFileException | LineUnavailableException ex) {
+            Logger.getLogger(ReceiveCallForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -54,6 +98,7 @@ public class ReceiveCallForm extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         btnOK = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
+        yourAvatar = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -63,6 +108,7 @@ public class ReceiveCallForm extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText(" đang gọi...");
 
         btnOK.setText("Nghe");
@@ -86,20 +132,26 @@ public class ReceiveCallForm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(37, 37, 37)
                 .addComponent(btnOK)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 92, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 170, Short.MAX_VALUE)
                 .addComponent(btnCancel)
                 .addGap(47, 47, 47))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(127, 127, 127)
+                .addComponent(yourAvatar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(102, 102, 102))
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(28, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(yourAvatar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
                 .addComponent(jLabel1)
-                .addGap(27, 27, 27)
+                .addGap(31, 31, 31)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnOK)
                     .addComponent(btnCancel))
@@ -110,14 +162,18 @@ public class ReceiveCallForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
+        if(clipRingtone.isOpen()){
+            clipRingtone.stop();
+            clipRingtone.close();
+        }
         try {
             //nhận âm thanh & phát
             new VoicePlayer().start();
             dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_ACCEPT_CALL, "I accept".getBytes("UTF8")));
-            
+
             //ghi âm & gửi
             new VoiceRecorder(this.user.getAddrListening(), this.user.getPortListening()).start();
-            
+
             btnOK.setEnabled(false);
             jLabel1.setText("Đang trò chuyện với " + this.user.getUserName());
         } catch (UnsupportedEncodingException ex) {
@@ -132,6 +188,10 @@ public class ReceiveCallForm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        if(clipRingtone.isOpen()){
+            clipRingtone.stop();
+            clipRingtone.close();
+        }
         try {
             if (Halo.isCalling) {
                 Halo.isCalling = false;
@@ -183,5 +243,6 @@ public class ReceiveCallForm extends javax.swing.JFrame {
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnOK;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel yourAvatar;
     // End of variables declaration//GEN-END:variables
 }

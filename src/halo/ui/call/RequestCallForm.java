@@ -3,12 +3,17 @@ package halo.ui.call;
 import halo.Halo;
 import halo.models.Packet;
 import halo.models.User;
+import java.awt.Image;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -18,6 +23,7 @@ public class RequestCallForm extends javax.swing.JFrame {
 
     private User user;
     public DataOutputStream dout;
+    private ImageIcon defaultUserIcon;
 
     /**
      * Creates new form RequestCallingForm
@@ -31,6 +37,28 @@ public class RequestCallForm extends javax.swing.JFrame {
         initComponents();
         this.user = user;
         jLabel1.setText(jLabel1.getText() + this.user.getUserName());
+        
+        //default avatar
+        try {
+            BufferedImage bufferedImage = ImageIO.read(getClass().getResource("/halo/resources/no-user-image-square.jpg"));
+            Image newimg = bufferedImage.getScaledInstance(yourAvatar.getWidth(), yourAvatar.getHeight(), java.awt.Image.SCALE_SMOOTH);
+            defaultUserIcon = new ImageIcon(newimg);
+        } catch (IOException ex) {
+            defaultUserIcon = new ImageIcon();
+        }
+
+        //set your avatar
+        try {
+            if (this.user.getAvatar() != null && this.user.getAvatar().length > 0) {
+                BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(this.user.getAvatar()));
+                Image newimg = bufferedImage.getScaledInstance(yourAvatar.getWidth(), yourAvatar.getHeight(), java.awt.Image.SCALE_SMOOTH);
+                yourAvatar.setIcon(new ImageIcon(newimg));
+            } else {
+                yourAvatar.setIcon(defaultUserIcon);
+            }
+        } catch (IOException ex) {
+            yourAvatar.setIcon(defaultUserIcon);
+        }
     }
 
     public void UserBusy() {
@@ -52,8 +80,10 @@ public class RequestCallForm extends javax.swing.JFrame {
 
         btnCancel = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        yourAvatar = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(378, 249));
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -68,6 +98,7 @@ public class RequestCallForm extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Đang gọi ");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -75,20 +106,28 @@ public class RequestCallForm extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(107, 107, 107)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(btnCancel))
-                .addContainerGap(128, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(147, 147, 147)
+                        .addComponent(btnCancel))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(127, 127, 127)
+                        .addComponent(yourAvatar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(151, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(34, 34, 34)
+                .addContainerGap()
+                .addComponent(yourAvatar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
                 .addComponent(btnCancel)
-                .addContainerGap(26, Short.MAX_VALUE))
+                .addGap(32, 32, 32))
         );
 
         pack();
@@ -150,5 +189,6 @@ public class RequestCallForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel yourAvatar;
     // End of variables declaration//GEN-END:variables
 }

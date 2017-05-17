@@ -1,12 +1,17 @@
 package halo.models;
 
+import halo.Halo;
 import halo.dataaccess.SQLDatabaseConnection;
 import java.io.ByteArrayInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -28,6 +33,11 @@ public class User {
     private String status;
     private boolean isOnline;
 
+    //rsa
+    private String publicKeyN;
+    private String publicKeyE;
+
+    // <editor-fold defaultstate="collapsed" desc="Constructor">
     public User() {
     }
 
@@ -37,38 +47,21 @@ public class User {
         refreshData();
     }
 
-    public User(String userName, String hashPassword, byte[] avatar, String status, String addrListening, int portListening) throws SQLException {
+    public User(String userName, String hashPassword, byte[] avatar, String status, String addrListening, int portListening, boolean isOnline, String publicKeyN, String publicKeyE) throws SQLException {
         this.userName = userName;
         this.hashPassword = hashPassword;
         this.avatar = avatar;
         this.status = status;
         this.addrListening = addrListening;
         this.portListening = portListening;
+        this.isOnline = isOnline;
+        this.publicKeyN = publicKeyN;
+        this.publicKeyE = publicKeyE;
         connection = new SQLDatabaseConnection();
     }
+    // </editor-fold>
 
-    @Override
-    protected void finalize() {
-        try {
-            setAddrListening(null);
-            setPortListening(0);
-        } catch (SQLException ex) {
-            System.out.println("Destroyed.");
-        }
-    }
-
-    public void refreshData() throws SQLException {
-        ResultSet resultSet = connection.Select(tableName, "username='" + userName + "'");
-        resultSet.next();
-
-        this.userName = resultSet.getString("username");
-        this.hashPassword = resultSet.getString("password");
-        this.avatar = resultSet.getBytes("avatar");
-        this.addrListening = resultSet.getString("ip");
-        this.portListening = resultSet.getInt("port");
-        this.status = resultSet.getString("status");
-    }
-
+    // <editor-fold defaultstate="collapsed" desc="Properties">
     public String getUserName() {
         return userName;
     }
@@ -101,13 +94,13 @@ public class User {
         this.avatar = avatar;
         connection.Update(tableName, "username='" + userName + "'", "avatar", new ByteArrayInputStream(this.avatar));
     }
-    
-    public void deleteAvatar() throws SQLException{
+
+    public void deleteAvatar() throws SQLException {
         Map<String, String> data = new HashMap<>();
         data.put("avatar", null);
         connection.Update(tableName, "username='" + userName + "'", data);
     }
-    
+
     public String getStatus() {
         return status;
     }
@@ -121,6 +114,10 @@ public class User {
     }
 
     public String getAddrListening() {
+        try {
+            refreshData();
+        } catch (SQLException ex) {
+        }
         return addrListening;
     }
 
@@ -133,6 +130,10 @@ public class User {
     }
 
     public int getPortListening() {
+        try {
+            refreshData();
+        } catch (SQLException ex) {
+        }
         return portListening;
     }
 
@@ -160,7 +161,48 @@ public class User {
         connection.Update(tableName, "username='" + userName + "'", data);
     }
 
-    public ArrayList<User> getFriends() throws SQLException, ClassNotFoundException {
+    public String getPublicKeyN() {
+        return publicKeyN;
+    }
+
+    public void setPublicKeyN(String publicKeyN) throws SQLException {
+        this.publicKeyN = publicKeyN;
+
+        Map<String, String> data = new HashMap<>();
+        data.put("publicKeyN", publicKeyN);
+        connection.Update(tableName, "username='" + userName + "'", data);
+    }
+
+    public String getPublicKeyE() {
+        return publicKeyE;
+    }
+
+    public void setPublicKeyE(String publicKeyE) throws SQLException {
+        this.publicKeyE = publicKeyE;
+
+        Map<String, String> data = new HashMap<>();
+        data.put("publicKeyE", publicKeyE);
+        connection.Update(tableName, "username='" + userName + "'", data);
+    }
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="Method">
+    public void refreshData() throws SQLException {
+        ResultSet resultSet = connection.Select(tableName, "username='" + userName + "'");
+        resultSet.next();
+
+        this.userName = resultSet.getString("username");
+        this.hashPassword = resultSet.getString("password");
+        this.avatar = resultSet.getBytes("avatar");
+        this.addrListening = resultSet.getString("ip");
+        this.portListening = resultSet.getInt("port");
+        this.status = resultSet.getString("status");
+        this.isOnline = resultSet.getInt("isOnline") == 1;
+        this.publicKeyN = resultSet.getString("publicKeyN");
+        this.publicKeyE = resultSet.getString("publicKeyE");
+    }
+
+    public ArrayList<User> getFriends() throws SQLException {
         ResultSet resultSet = connection.Select("friend", "username1='" + userName + "' OR username2='" + userName + "'");
         ArrayList<User> users = new ArrayList<>();
         while (resultSet.next()) {
@@ -179,18 +221,78 @@ public class User {
         return users;
     }
 
-    public static User getUser(String username) throws SQLException {
-        SQLDatabaseConnection connection = new SQLDatabaseConnection();
-        ResultSet resultSet = connection.Select(tableName, "username='" + username + "'");
-        resultSet.next();
-        return new User(resultSet.getString("username"), resultSet.getString("password"), resultSet.getBytes("avatar"), resultSet.getString("status"), resultSet.getString("ip"), resultSet.getInt("port"));
+    public static User getUser(String username) {
+        try {
+            SQLDatabaseConnection connection = new SQLDatabaseConnection();
+            ResultSet resultSet = connection.Select(tableName, "username='" + username + "'");
+            resultSet.next();
+            return new User(resultSet.getString("username"), resultSet.getString("password"), resultSet.getBytes("avatar"), resultSet.getString("status"), resultSet.getString("ip"), resultSet.getInt("port"), resultSet.getInt("isOnline") == 1, resultSet.getString("publicKeyN"), resultSet.getString("publicKeyE"));
+        } catch (SQLException ex) {
+            return null;
+        }
     }
 
-    public void addFriend(User friend) throws SQLException{
-        Map<String,String> relationship = new HashMap<String,String>();
-        relationship.put(this.getUserName(), friend.getUserName());
+    public static void registNewUser(String userName, String password) throws SQLException {
+        User user = getUser(userName);
+        if (user == null) {
+            SQLDatabaseConnection connection = new SQLDatabaseConnection();
+            Map<String, String> data = new HashMap<>();
+            data.put("username", userName);
+            data.put("password", MD5Encode(password));
+            connection.Insert(tableName, data);
+        }
+    }
+
+    public void addFriend(User friend) throws SQLException {
+        Map<String, String> relationship = new HashMap<String, String>();
+        relationship.put("username1", this.getUserName());
+        relationship.put("username2", friend.getUserName());
         connection.Insert("friend", relationship);
     }
+
+    public void unFriend(User friend) throws SQLException {
+        Map<String, String> where = new HashMap<String, String>();
+        where.put("username1", friend.getUserName());
+        where.put("username2", userName);
+        connection.Delete("friend", where, "AND");
+
+        where = new HashMap<String, String>();
+        where.put("username2", friend.getUserName());
+        where.put("username1", userName);
+        connection.Delete("friend", where, "AND");
+    }
+
+    public boolean isFriendOf(User user) throws SQLException {
+        ArrayList<User> friends = this.getFriends();
+        return friends.contains(user);
+    }
+
+    public boolean equalsPassword(String password) {
+        return this.hashPassword.equals(MD5Encode(password));
+    }
+
+    private static String MD5Encode(String s) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(s.getBytes());
+
+            byte byteData[] = md.digest();
+
+            //convert the byte to hex format method 1
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < byteData.length; i++) {
+                sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+            }
+
+            return sb.toString();
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(Halo.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="Override">
     public String toString() {
         return this.userName;
     }
@@ -218,4 +320,15 @@ public class User {
     public int hashCode() {
         return getUserName().hashCode();
     }
+
+    @Override
+    protected void finalize() {
+        try {
+            setAddrListening(null);
+            setPortListening(0);
+        } catch (SQLException ex) {
+            System.out.println("Destroyed.");
+        }
+    }
+    // </editor-fold>
 }

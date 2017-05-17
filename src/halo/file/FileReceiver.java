@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.Socket;
+import javax.swing.JLabel;
 
 /**
  *
@@ -18,8 +19,11 @@ public class FileReceiver extends Thread {
     private DataInputStream din;
     private DataOutputStream dout;
 
-    public FileReceiver(Socket socket) throws IOException {
+    private JLabel jLabelReceiveFile;
+
+    public FileReceiver(Socket socket, JLabel jLabelReceiveFile) throws IOException {
         this.socket = socket;
+        this.jLabelReceiveFile = jLabelReceiveFile;
         din = new DataInputStream(this.socket.getInputStream());
         dout = new DataOutputStream(this.socket.getOutputStream());
     }
@@ -28,6 +32,8 @@ public class FileReceiver extends Thread {
     public void run() {
         RandomAccessFile rw = null;
         long current_file_pointer = 0;
+        String file_name = "";
+        long file_length = 1;
         boolean loop_break = false;
         while (true) {
             try {
@@ -43,15 +49,21 @@ public class FileReceiver extends Thread {
                     byte[] recv_data = Packet.ReadStream(din);
                     switch (new String(cmd_buff)) {
                         case Packet.COMMAND_SEND_FILE_NAME:
-                            rw = new RandomAccessFile(new String(recv_data), "rw");
+                            file_name = new String(recv_data);
+                            rw = new RandomAccessFile(file_name, "rw");
                             dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_REQUEST_SEND_FILE_DATA, String.valueOf(current_file_pointer).getBytes("UTF8")));
                             dout.flush();
+                            break;
+                        case Packet.COMMAND_SEND_FILE_LENGTH:
+                            file_length = Long.parseLong(new String(recv_data));
                             break;
                         case Packet.COMMAND_SEND_FILE_DATA:
                             rw.seek(current_file_pointer);
                             rw.write(recv_data);
                             current_file_pointer = rw.getFilePointer();
-                            System.out.println("Download percentage: " + ((float) current_file_pointer / rw.length()) * 100 + "%");
+                            float percent = ((float) current_file_pointer / file_length) * 100;
+                            jLabelReceiveFile.setText("Nhận file: " + file_name + " (" + (int) percent + "%)");
+                            System.out.println("Download percentage: " + ((float) current_file_pointer / file_length) * 100 + "%");
                             dout.write(Packet.CreateDataPacket(Halo.user.getUserName(), Packet.COMMAND_REQUEST_SEND_FILE_DATA, String.valueOf(current_file_pointer).getBytes("UTF8")));
                             dout.flush();
                             break;
@@ -63,6 +75,7 @@ public class FileReceiver extends Thread {
                     }
                 }
                 if (loop_break == true) {
+                    rw.close();
                     socket.close();
                 }
             } catch (IOException ex) {
