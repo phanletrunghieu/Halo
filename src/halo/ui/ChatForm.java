@@ -395,8 +395,14 @@ public class ChatForm extends javax.swing.JFrame {
     }
 
     private void UpdateRightPostion() {
-        for (JLabel jLabel : myMessage) {
-            jLabel.setLocation(jPanelChat.getWidth() - jLabel.getPreferredSize().width - MESSAGE_MARGIN, jLabel.getLocation().y);
+        if (jScrollPaneChat.getVerticalScrollBar().isVisible()) {
+            for (JLabel jLabel : myMessage) {
+                jLabel.setLocation(jPanelChat.getWidth() - jLabel.getPreferredSize().width - MESSAGE_MARGIN - 20, jLabel.getLocation().y);
+            }
+        } else {
+            for (JLabel jLabel : myMessage) {
+                jLabel.setLocation(jPanelChat.getWidth() - jLabel.getPreferredSize().width - MESSAGE_MARGIN, jLabel.getLocation().y);
+            }
         }
     }
 }
