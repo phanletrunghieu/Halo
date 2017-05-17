@@ -329,6 +329,10 @@ public class ChatForm extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     public JLabel DisplayYourMessage(String message) {
+        if (message == null || message.trim().isEmpty()) {
+            return null;
+        }
+
         //init
         javax.swing.JLabel jLabelMessage = new javax.swing.JLabel(message);
         jLabelMessage.setBackground(new java.awt.Color(52, 152, 219));
@@ -358,6 +362,10 @@ public class ChatForm extends javax.swing.JFrame {
     }
 
     private JLabel DisplayMyMessage(String message) {
+        if (message == null || message.trim().isEmpty()) {
+            return null;
+        }
+
         //init
         javax.swing.JLabel jLabelMessage = new javax.swing.JLabel(message);
         jLabelMessage.setBackground(new java.awt.Color(210, 82, 127));
