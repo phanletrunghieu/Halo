@@ -52,12 +52,12 @@ public class RegistrationForm extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(210, 82, 127));
-        jLabel1.setText("Đăng ký");
+        jLabel1.setText("Register");
 
         btnLogin.setBackground(new java.awt.Color(210, 82, 127));
         btnLogin.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnLogin.setForeground(new java.awt.Color(255, 255, 255));
-        btnLogin.setText("Đăng ký");
+        btnLogin.setText("Register");
         btnLogin.setBorder(null);
         btnLogin.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnLogin.addActionListener(new java.awt.event.ActionListener() {
@@ -68,12 +68,12 @@ public class RegistrationForm extends javax.swing.JFrame {
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel2.setText("Tên đăng nhập");
+        jLabel2.setText("Username");
 
         jPanel1.setPreferredSize(new java.awt.Dimension(100, 40));
 
         txtUsername.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtUsername.setToolTipText("Tên đăng nhập");
+        txtUsername.setToolTipText("Username");
         txtUsername.setBorder(null);
         txtUsername.setOpaque(false);
 
@@ -96,12 +96,12 @@ public class RegistrationForm extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel3.setText("Mật khẩu");
+        jLabel3.setText("Password");
 
         jPanel2.setPreferredSize(new java.awt.Dimension(100, 40));
 
         txtPassword.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtPassword.setToolTipText("Mật khẩu");
+        txtPassword.setToolTipText("Password");
         txtPassword.setBorder(null);
         txtPassword.setOpaque(false);
         txtPassword.addActionListener(new java.awt.event.ActionListener() {
@@ -129,12 +129,12 @@ public class RegistrationForm extends javax.swing.JFrame {
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel4.setText("Nhập lại mật khẩu");
+        jLabel4.setText("Re-type password");
 
         jPanel3.setPreferredSize(new java.awt.Dimension(100, 40));
 
         txtPassword1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtPassword1.setToolTipText("Mật khẩu");
+        txtPassword1.setToolTipText("Re-type password");
         txtPassword1.setBorder(null);
         txtPassword1.setOpaque(false);
         txtPassword1.addActionListener(new java.awt.event.ActionListener() {

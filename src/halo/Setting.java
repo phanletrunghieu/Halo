@@ -69,6 +69,13 @@ public class Setting {
         }
         return inetAddress;
     }
+    
+    public static void SetIP(String ip){
+        try {
+            Store("User", "IP", ip);
+        } catch (IOException ex) {
+        }
+    }
 
     public static ArrayList<InetAddress> GetIPs() throws SocketException {
         ArrayList<InetAddress> ips = new ArrayList<>();
