@@ -1,7 +1,10 @@
 package halo.ui;
 
+import halo.Halo;
 import halo.Listener;
 import halo.models.User;
+import halo.ui.call.RequestCallForm;
+import halo.voice.VoiceClient;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -9,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,8 +31,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class FriendList extends javax.swing.JFrame {
 
     private User user;
+    private User friendRightClick;
     private ImageIcon defaultUserIcon;
-    //private List<User> chattingUsers = new ArrayList<User>();
 
     /**
      * Creates new form FriendList
@@ -66,8 +68,13 @@ public class FriendList extends javax.swing.JFrame {
     }
 
     public void updateInfo() {
-        this.setTitle("Halo chat view ");
-        userNameLabel.setText(this.user.getUserName());
+        this.setTitle("Halo chat view");
+        this.userNameLabel.setText(this.user.getUserName());
+        if (this.user.isIsOnline()) {
+            this.onlineComboBox.setSelectedIndex(0);
+        } else {
+            this.onlineComboBox.setSelectedIndex(1);
+        }
         try {
             if (this.user.getAvatar() != null && this.user.getAvatar().length > 0) {
                 BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(this.user.getAvatar()));
@@ -95,7 +102,7 @@ public class FriendList extends javax.swing.JFrame {
                 friendList.setCellRenderer(new UserRenderer());
             }
 
-        } catch (SQLException | ClassNotFoundException ex) {
+        } catch (SQLException ex) {
             Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -111,6 +118,10 @@ public class FriendList extends javax.swing.JFrame {
 
         avatarMenu = new javax.swing.JPopupMenu();
         jMenuItemDelete = new javax.swing.JMenuItem();
+        friendMenu = new javax.swing.JPopupMenu();
+        jMenuItemUnFriend = new javax.swing.JMenuItem();
+        jMenuItemChatText = new javax.swing.JMenuItem();
+        jMenuItemChatVoice = new javax.swing.JMenuItem();
         jScrollPane1 = new javax.swing.JScrollPane();
         friendList = new javax.swing.JList<>();
         statusTextField = new javax.swing.JTextField();
@@ -127,7 +138,36 @@ public class FriendList extends javax.swing.JFrame {
         });
         avatarMenu.add(jMenuItemDelete);
 
+        jMenuItemUnFriend.setText("Unfriend");
+        jMenuItemUnFriend.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemUnFriendActionPerformed(evt);
+            }
+        });
+        friendMenu.add(jMenuItemUnFriend);
+
+        jMenuItemChatText.setText("Chat Text");
+        jMenuItemChatText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemChatTextActionPerformed(evt);
+            }
+        });
+        friendMenu.add(jMenuItemChatText);
+
+        jMenuItemChatVoice.setText("Chat Voice");
+        jMenuItemChatVoice.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemChatVoiceActionPerformed(evt);
+            }
+        });
+        friendMenu.add(jMenuItemChatVoice);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         friendList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         friendList.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -173,7 +213,7 @@ public class FriendList extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 303, Short.MAX_VALUE)
                     .addComponent(statusTextField)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(avatarLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -192,20 +232,20 @@ public class FriendList extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addComponent(statusTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(userNameLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(onlineComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
-                        .addComponent(findFriendBtn))
-                    .addComponent(avatarLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(53, 53, 53))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(userNameLabel)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(onlineComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(avatarLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(findFriendBtn))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -234,17 +274,24 @@ public class FriendList extends javax.swing.JFrame {
     }//GEN-LAST:event_onlineComboBoxActionPerformed
 
     private void findFriendBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findFriendBtnActionPerformed
-        String userToAdd = JOptionPane.showInputDialog("Please input the friend you want to add ! ", "Add friend ");
+        String userToAdd = JOptionPane.showInputDialog("Please input the friend you want to add !");
+        if (userToAdd == null || userToAdd.trim() == "") {
+            return;
+        }
+
         try {
             User userAdded = User.getUser(userToAdd);
 
             if (userAdded == null) {
-                JOptionPane.showConfirmDialog(rootPane, "User doesn't exists");
+                JOptionPane.showMessageDialog(rootPane, "User doesn't exists", "Error", JOptionPane.ERROR_MESSAGE);
+            } else if (userToAdd.equals(this.user.getUserName())) {
+                JOptionPane.showMessageDialog(rootPane, "Choose other name", "Error", JOptionPane.ERROR_MESSAGE);
+            } else if (this.user.isFriendOf(userAdded)) {
+                JOptionPane.showMessageDialog(rootPane, userToAdd + " has been friend of you", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
                 this.user.addFriend(userAdded);
-                JOptionPane.showConfirmDialog(rootPane, "User " + userAdded.getUserName() + " added !");
+                this.getFriends();
             }
-            this.updateInfo();
         } catch (SQLException ex) {
             Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -286,25 +333,57 @@ public class FriendList extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItemDeleteActionPerformed
 
     private void friendListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_friendListMouseClicked
-        // TODO add your handling code here:
         JList source = (JList) evt.getSource();
-        if (evt.getClickCount() >= 2) {
+        if (SwingUtilities.isRightMouseButton(evt)) {//right click
+            this.friendRightClick = (User) source.getSelectedValue();
+            friendMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+        } else if (evt.getClickCount() == 2) {
             // Check double click on item
-            String selected = source.getSelectedValue().toString();
-            try {
-                if (!Listener.getusersChattingName().contains(selected)) { // Check if we are already chatting with this user 
-                    Listener.addUserChattingName(selected);
-                    new ChatForm(new User(selected)).setVisible(true);
-                }   
-            } catch (SQLException ex) {
-                    Logger.getLogger(FriendList.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            User selectedUser = (User) source.getSelectedValue();
+            if (!Listener.isChattingWith(selectedUser)) { // Check if we are already chatting with this user
+                new ChatForm(selectedUser).setVisible(true);
+            }
         }
     }//GEN-LAST:event_friendListMouseClicked
 
+    private void jMenuItemUnFriendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemUnFriendActionPerformed
+        try {
+            this.user.unFriend(friendRightClick);
+            this.getFriends();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jMenuItemUnFriendActionPerformed
+
+    private void jMenuItemChatTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemChatTextActionPerformed
+        if (!Listener.isChattingWith(friendRightClick)) { // Check if we are already chatting with this user
+            new ChatForm(friendRightClick).setVisible(true);
+        }
+    }//GEN-LAST:event_jMenuItemChatTextActionPerformed
+
+    private void jMenuItemChatVoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemChatVoiceActionPerformed
+        try {
+            Halo.isCalling = true;
+            RequestCallForm requestCallingForm = new RequestCallForm(this.friendRightClick);
+            requestCallingForm.setVisible(true);
+            new VoiceClient(this.friendRightClick.getAddrListening(), this.friendRightClick.getPortListening(), requestCallingForm).start();
+        } catch (IOException ex) {
+            Halo.isCalling = false;
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jMenuItemChatVoiceActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            this.user.setIsOnline(false);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_formWindowClosing
+
     /**
-         * @param args the command line arguments
-         */
+     * @param args the command line arguments
+     */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -342,7 +421,11 @@ public class FriendList extends javax.swing.JFrame {
     private javax.swing.JPopupMenu avatarMenu;
     private javax.swing.JButton findFriendBtn;
     private javax.swing.JList<User> friendList;
+    private javax.swing.JPopupMenu friendMenu;
+    private javax.swing.JMenuItem jMenuItemChatText;
+    private javax.swing.JMenuItem jMenuItemChatVoice;
     private javax.swing.JMenuItem jMenuItemDelete;
+    private javax.swing.JMenuItem jMenuItemUnFriend;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JComboBox<String> onlineComboBox;
     private javax.swing.JTextField statusTextField;
