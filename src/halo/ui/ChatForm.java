@@ -21,7 +21,6 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JScrollBar;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -249,9 +248,9 @@ public class ChatForm extends javax.swing.JFrame {
         JFileChooser jfc = new JFileChooser();
         int dialog_value = jfc.showOpenDialog(null);
         if (dialog_value == JFileChooser.APPROVE_OPTION) {
-            DisplayMyMessage("Gửi file: " + jfc.getSelectedFile().getName());
+            JLabel jLabelSendFile = DisplayMyMessage("Gửi file: " + jfc.getSelectedFile().getName() + " (0000%)");
             try {
-                new FileSender(user.getAddrListening(), user.getPortListening(), jfc.getSelectedFile()).run();
+                new FileSender(user.getAddrListening(), user.getPortListening(), jfc.getSelectedFile(), jLabelSendFile).start();
             } catch (IOException ex) {
                 Logger.getLogger(ChatForm.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -329,11 +328,7 @@ public class ChatForm extends javax.swing.JFrame {
     private javax.swing.JLabel yourAvatar;
     // End of variables declaration//GEN-END:variables
 
-    public void receiveNewMessage(String message) {
-        DisplayYourMessage(message);
-    }
-
-    private void DisplayYourMessage(String message) {
+    public JLabel DisplayYourMessage(String message) {
         //init
         javax.swing.JLabel jLabelMessage = new javax.swing.JLabel(message);
         jLabelMessage.setBackground(new java.awt.Color(52, 152, 219));
@@ -358,9 +353,11 @@ public class ChatForm extends javax.swing.JFrame {
         jPanelChat.revalidate();
         jPanelChat.repaint();
         MESSAGE_CURRENT_Y_POSTION += jLabelMessage.getPreferredSize().height + MESSAGE_MARGIN;
+
+        return jLabelMessage;
     }
 
-    private void DisplayMyMessage(String message) {
+    private JLabel DisplayMyMessage(String message) {
         //init
         javax.swing.JLabel jLabelMessage = new javax.swing.JLabel(message);
         jLabelMessage.setBackground(new java.awt.Color(210, 82, 127));
@@ -385,6 +382,8 @@ public class ChatForm extends javax.swing.JFrame {
         jPanelChat.revalidate();
         jPanelChat.repaint();
         MESSAGE_CURRENT_Y_POSTION += jLabelMessage.getPreferredSize().height + MESSAGE_MARGIN;
+
+        return jLabelMessage;
     }
 
     private void UpdateRightPostion() {

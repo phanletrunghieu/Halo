@@ -2,15 +2,9 @@ package halo.ui;
 
 import halo.Halo;
 import halo.Listener;
-import halo.models.AlgorithmRSA;
 import halo.models.User;
 import java.awt.Color;
-import java.awt.event.KeyEvent;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**

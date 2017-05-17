@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JLabel;
 
 /**
  * accept connect request from other users
@@ -25,9 +26,9 @@ import java.util.logging.Logger;
 public class Listener extends Thread {
 
     private static ArrayList<ChatForm> usersChatting = new ArrayList<>();
-    
+
     public static void addUserChatting(ChatForm chatForm) {
-        if(!isChattingWith(chatForm.getUser())){ // if it doesn't already exists
+        if (!isChattingWith(chatForm.getUser())) { // if it doesn't already exists
             usersChatting.add(chatForm);
         }
     }
@@ -36,11 +37,10 @@ public class Listener extends Thread {
         usersChatting.remove(chatForm);
         chatForm.dispose();
     }
-    
-    public static boolean isChattingWith(User user)
-    {
+
+    public static boolean isChattingWith(User user) {
         for (int i = 0; i < usersChatting.size(); i++) {
-            if(usersChatting.get(i).getUser().equals(user)){
+            if (usersChatting.get(i).getUser().equals(user)) {
                 return true;
             }
         }
@@ -115,15 +115,15 @@ public class Listener extends Thread {
                         case Packet.COMMAND_SEND_TEXT:
                             try {
                                 ChatForm chatForm = ShowChatForm(fromUsername);
-                                chatForm.receiveNewMessage(Halo.rsa.decrypt(new String(data)));
+                                chatForm.DisplayYourMessage(Halo.rsa.decrypt(new String(data)));
                             } catch (NullPointerException ex) {
                                 System.out.println("Message is empty");
                             }
                             break;
                         case Packet.COMMAND_SEND_FILE:
                             ChatForm chatForm = ShowChatForm(fromUsername);
-                            chatForm.receiveNewMessage("Nhận file: " + new String(data));
-                            new FileReceiver(clientSocket).start();
+                            JLabel jLabelReceive = chatForm.DisplayYourMessage("Nhận file: " + new String(data) + " (000%)");
+                            new FileReceiver(clientSocket, jLabelReceive).start();
                             break;
                         case Packet.COMMAND_REQUEST_CALL:
                             if (Halo.isCalling) {

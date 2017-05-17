@@ -17,14 +17,15 @@ public class Packet {
     public final static String COMMAND_SEND_TEXT = "122";
     public final static String COMMAND_SEND_FILE = "123";
     public final static String COMMAND_SEND_FILE_NAME = "124";
-    public final static String COMMAND_REQUEST_SEND_FILE_DATA = "125";
-    public final static String COMMAND_SEND_FILE_DATA = "126";
-    public final static String COMMAND_SEND_FINISH = "127";
+    public final static String COMMAND_SEND_FILE_LENGTH = "125";
+    public final static String COMMAND_REQUEST_SEND_FILE_DATA = "126";
+    public final static String COMMAND_SEND_FILE_DATA = "127";
+    public final static String COMMAND_SEND_FINISH = "128";
 
-    public final static String COMMAND_REQUEST_CALL = "128";
-    public final static String COMMAND_CANCEL_CALL = "129";
-    public final static String COMMAND_USER_BUSY = "130";
-    public final static String COMMAND_ACCEPT_CALL = "131";
+    public final static String COMMAND_REQUEST_CALL = "129";
+    public final static String COMMAND_CANCEL_CALL = "130";
+    public final static String COMMAND_USER_BUSY = "131";
+    public final static String COMMAND_ACCEPT_CALL = "132";
 
     /**
      *
