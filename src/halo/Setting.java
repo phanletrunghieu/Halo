@@ -20,6 +20,8 @@ public class Setting {
 
     private static String DEFAULT_DATABASE_IP = "localhost";
     private static int DEFAULT_DATABASE_PORT = 1433;
+    
+    private static int VERSION = 1;
 
     public static String GetServerIP() {
         try {
@@ -69,12 +71,16 @@ public class Setting {
         }
         return inetAddress;
     }
-    
-    public static void SetIP(String ip){
+
+    public static void SetIP(String ip) {
         try {
             Store("User", "IP", ip);
         } catch (IOException ex) {
         }
+    }
+
+    public static int GetVersion() {
+        return VERSION;
     }
 
     public static ArrayList<InetAddress> GetIPs() throws SocketException {

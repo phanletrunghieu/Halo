@@ -3,6 +3,11 @@ package halo;
 import halo.models.AlgorithmRSA;
 import halo.models.User;
 import halo.ui.LoginForm;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -21,6 +26,20 @@ public class Halo {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        
+        //check update
+        try {
+            String urlNewVersion = Updater.CheckUpdate();
+            if(urlNewVersion!=null){
+                int result = JOptionPane.showConfirmDialog(null, "Update new version?", "Update", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if(result==JOptionPane.YES_OPTION){
+                    String path = System.getProperty("user.dir");
+                    Updater.DownloadFile(urlNewVersion, path);
+                    JOptionPane.showMessageDialog(null, "New version was downloaded.", "Successful!", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        } catch (IOException ex) {
+        }
         
         new LoginForm().setVisible(true);
         
