@@ -24,35 +24,39 @@ public class Updater {
 
     static String strURLUpdate = "http://democode.byethost16.com/Halo/latest-release";
 
-    public static String CheckUpdate() throws MalformedURLException, IOException {
-        URL url = new URL(strURLUpdate);
-        HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
-        httpConn.setRequestProperty("Cookie", "__test=9c9db6c3df85690275645eaf416881a8");
-        int responseCode = httpConn.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            String jsonString = "";
+    public static String CheckUpdate() {
+        try {
+            URL url = new URL(strURLUpdate);
+            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+            httpConn.setRequestProperty("Cookie", "__test=8ae11d5cc7ceab2aface6c028975b394");
+            int responseCode = httpConn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                String jsonString = "";
 
-            //read from InputStream
-            InputStream inputStream = httpConn.getInputStream();
-            byte[] buffer = new byte[1];
-            int bytesRead = -1;
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                jsonString += new String(buffer);
+                //read from InputStream
+                InputStream inputStream = httpConn.getInputStream();
+                byte[] buffer = new byte[1];
+                int bytesRead = -1;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    jsonString += new String(buffer);
+                }
+                inputStream.close();
+                jsonString = jsonString.replaceAll("\\\\([\"/])", "$1");
+
+                //Decode Json
+                JsonParserFactory factory = JsonParserFactory.getInstance();
+                JSONParser parser = factory.newJsonParser();
+                Map jsonMap = parser.parseJson(jsonString);
+
+                int newVersion = Integer.parseInt((String) jsonMap.get("version"));
+                if (newVersion > Setting.GetVersion()) {
+                    return (String) jsonMap.get("url");
+                }
             }
-            inputStream.close();
-            jsonString = jsonString.replaceAll("\\\\([\"/])", "$1");
-
-            //Decode Json
-            JsonParserFactory factory = JsonParserFactory.getInstance();
-            JSONParser parser = factory.newJsonParser();
-            Map jsonMap = parser.parseJson(jsonString);
-
-            int newVersion = Integer.parseInt((String) jsonMap.get("version"));
-            if (newVersion > Setting.GetVersion()) {
-                return (String) jsonMap.get("url");
-            }
+            return null;
+        } catch (Exception e) {
+            return null;
         }
-        return null;
     }
 
     public static int DownloadFile(String fileURL, String saveDir) throws MalformedURLException, IOException {
