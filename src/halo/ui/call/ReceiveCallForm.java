@@ -77,7 +77,7 @@ public class ReceiveCallForm extends javax.swing.JFrame {
         try {
             //play ringtone
             AudioInputStream ringtone=AudioSystem.getAudioInputStream(getClass().getResource("/halo/resources/phone-ringtone.wav"));
-            clipRingtone=AudioSystem.getClip();
+            clipRingtone=AudioSystem.getClip(null);
             clipRingtone.open(ringtone);
             clipRingtone.start();
             clipRingtone.loop(Clip.LOOP_CONTINUOUSLY);

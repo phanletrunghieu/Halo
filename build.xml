@@ -70,7 +70,7 @@
     nbproject/build-impl.xml file. 
 
     -->
-    
+     
     <target name="package-for-store" depends="jar">
         <property name="store.jar.name" value="Halo"/>
         <property name="store.dir" value="store"/>
